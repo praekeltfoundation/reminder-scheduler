@@ -25,7 +25,6 @@ class ReminderCreate(APIView):
         ReminderSchedule.objects.create(
             schedule_time=scheduled_for,
             recipient_id=recipient_id,
-            sender_id=settings.TURN_NUMBER,
             content='some reminder content'
         )
 

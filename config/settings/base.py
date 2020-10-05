@@ -158,4 +158,3 @@ CELERYBEAT_SCHEDULE = {
 
 TURN_AUTH_TOKEN = env.str("TURN_AUTH_TOKEN", "")
 TURN_URL = env.str("TURN_URL", "")
-TURN_NUMBER = env.str("TURN_NUMBER", "")
