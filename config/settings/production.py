@@ -7,6 +7,3 @@ DEBUG = False
 SECRET_KEY = env.str("SECRET_KEY")
 
 ALLOWED_HOSTS = env.str("ALLOWED_HOSTS").split(",")
-
-# Configure Sentry Logging
-SENTRY_DSN = env.str("SENTRY_DSN", "")
