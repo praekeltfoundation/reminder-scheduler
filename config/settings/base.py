@@ -38,6 +38,7 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
+    "rest_framework",
     "scheduler",
 ]
 
@@ -121,3 +122,10 @@ STATICFILES_FINDERS = (
 STATIC_ROOT = join(ROOT_DIR, "staticfiles")
 STATIC_URL = "/static/"
 COMPRESS_ENABLED = True
+
+REST_FRAMEWORK = {
+    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
+    'PAGE_SIZE': 10
+}
+
+TURN_NUMBER = env.str("TURN_NUMBER", "")

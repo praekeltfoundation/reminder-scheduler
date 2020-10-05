@@ -10,11 +10,12 @@ setup(
     packages=find_packages(),
     include_package_data=True,
     install_requires=[
-        "Django~=3.1.0",
+        "Django>=2.2.2,<2.3",
         "django-environ>=0.4.5,<0.5",
+        "djangorestframework",
         "dj-database-url",
         "psycopg2==2.8.4",
-        "raven>=6.10.0,<7"
+        "raven>=6.10.0,<7",
     ],
     classifiers=[
         "Development Status :: 4 - Beta",
