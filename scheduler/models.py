@@ -13,6 +13,6 @@ class ReminderSchedule(models.Model):
         indexes = [
             models.Index(
                 name='sent_time',
-                fields=['sent_time'],
+                fields=['sent_time', 'schedule_time'],
                 condition=models.Q(sent_time__isnull=True)),
         ]
