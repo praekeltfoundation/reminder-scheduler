@@ -49,7 +49,7 @@ def send_reminder(pk):
             "recipient_type": "individual",
             "to": reminder.recipient_id,
             "type": "text",
-            "text": {"body": reminder.content}
+            "text": {"body": reminder.content.text}
         }
         headers = {
             "Content-Type": "application/json",

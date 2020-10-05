@@ -6,7 +6,7 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import authentication, permissions
 
-from .models import ReminderSchedule
+from .models import ReminderSchedule, ReminderContent
 
 class ReminderCreate(APIView):
     queryset = ReminderSchedule.objects.all()
@@ -19,13 +19,15 @@ class ReminderCreate(APIView):
             message = {"contacts.0.wa_id": ["This field is required."]}
             return Response(message, status=status)
         
+        content = ReminderContent.objects.last()
+
         # Default to 23 hours but allow us to overwrite it
         delay = int(request.GET.get('hour_delay', 23))
         scheduled_for = timezone.now() + timedelta(hours=delay)
         ReminderSchedule.objects.create(
             schedule_time=scheduled_for,
             recipient_id=recipient_id,
-            content='some reminder content'
+            content=content
         )
 
         return Response({"accepted": True}, status=201)
