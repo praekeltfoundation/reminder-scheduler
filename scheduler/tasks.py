@@ -36,6 +36,7 @@ def check_for_scheduled_reminders():
     time_limit=15)
 def send_reminder(pk):
     with r.lock("reminder_%d" % pk, timeout=10):
+        # Return early if the reminder has already been sent
         try:
             reminder = ReminderSchedule.objects.get(pk=pk, sent_time__isnull=True)
         except ReminderSchedule.DoesNotExist:
