@@ -18,6 +18,7 @@ setup(
         "dj-database-url",
         "psycopg2==2.8.4",
         "raven>=6.10.0,<7",
+        "redis==2.10.6",
         "requests>=2.24.0"
     ],
     classifiers=[
