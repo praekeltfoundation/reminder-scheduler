@@ -19,7 +19,7 @@ def check_for_scheduled_reminders():
     logger.info("Checking for due reminders")
 
     threshold = timezone.now() + timedelta(minutes=5)
-    yesterday = timezone.now() + timedelta(hours=23)
+    yesterday = timezone.now() - timedelta(hours=23)
     reminders_due = ReminderSchedule.objects.filter(
         sent_time__isnull=True,
         schedule_time__lt=threshold,
