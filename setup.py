@@ -10,15 +10,15 @@ setup(
     packages=find_packages(),
     include_package_data=True,
     install_requires=[
-        "celery<4.0,>=3.1.15",
-        "Django>=2.2.2,<2.3",
-        "django-celery>=3.3.0,<3.4",
+        "celery==4.4.2",
+        "Django~=3.1.0",
+        "django-celery-beat==2.0.0",
         "django-environ>=0.4.5,<0.5",
         "djangorestframework",
         "dj-database-url",
         "psycopg2==2.8.4",
         "raven>=6.10.0,<7",
-        "redis==2.10.6",
+        "redis==3.5.3",
         "requests>=2.24.0"
     ],
     classifiers=[

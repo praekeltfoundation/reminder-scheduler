@@ -5,7 +5,6 @@ Django settings for reminder-scheduler project.
 import os
 from os.path import join
 
-import djcelery
 import dj_database_url
 import environ
 from celery.schedules import crontab
@@ -41,7 +40,8 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
-    "djcelery",
+    "celery",
+    "django_celery_beat",
     "rest_framework",
     "scheduler",
 ]
@@ -133,21 +133,16 @@ REST_FRAMEWORK = {
 }
 
 # Celery configuration options
-CELERY_RESULT_BACKEND = "djcelery.backends.database:DatabaseBackend"
-CELERYBEAT_SCHEDULER = "djcelery.schedulers.DatabaseScheduler"
+CELERY_RESULT_BACKEND = env.str("CELERY_RESULT_BACKEND", "redis://localhost:6379/0")
+CELERYBEAT_SCHEDULER = "django_celery_beat.schedulers:DatabaseScheduler"
 
-BROKER_URL = env.str("BROKER_URL", "redis://localhost:6379/0")
-
-CELERY_DEFAULT_QUEUE = "celery"
-CELERY_QUEUES = (
-    Queue("celery", Exchange("celery"), routing_key="celery"),
-)
+CELERY_BROKER_URL = env.str("CELERY_BROKER_URL", "redis://localhost:6379/0")
+# BROKER_URL and REDIS_URL are required to have rabbitmq and redis monitoring.
+# Redis is used in dev env, RabbitMQ on production.
+BROKER_URL = env.str("CELERY_BROKER_URL", "redis://localhost:6379/0")
+REDIS_URL = env.str("REDIS_URL", "redis://localhost:6379/0")
 
 CELERY_ALWAYS_EAGER = False
-CELERY_IMPORTS = ("scheduler.tasks",)
-CELERY_CREATE_MISSING_QUEUES = True
-
-CELERY_ROUTES = {"celery.backend_cleanup": {"queue": "mediumpriority"}}
 
 CELERY_TASK_SERIALIZER = 'json'
 CELERY_RESULT_SERIALIZER = 'json'
@@ -160,8 +155,6 @@ CELERYBEAT_SCHEDULE = {
         "kwargs":{},
     },
 }
-
-djcelery.setup_loader()
 
 TURN_AUTH_TOKEN = env.str("TURN_AUTH_TOKEN", "")
 TURN_URL = env.str("TURN_URL", "")
