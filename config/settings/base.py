@@ -7,6 +7,8 @@ from os.path import join
 
 import dj_database_url
 import environ
+from celery.schedules import crontab
+from kombu import Exchange, Queue
 
 root = environ.Path(__file__) - 3
 env = environ.Env(DEBUG=(bool, False))
@@ -38,6 +40,9 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
+    "celery",
+    "django_celery_beat",
+    "rest_framework",
     "scheduler",
 ]
 
@@ -121,3 +126,41 @@ STATICFILES_FINDERS = (
 STATIC_ROOT = join(ROOT_DIR, "staticfiles")
 STATIC_URL = "/static/"
 COMPRESS_ENABLED = True
+
+# Configure Sentry Logging
+SENTRY_DSN = env.str("SENTRY_DSN", "")
+
+REST_FRAMEWORK = {
+    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
+    'PAGE_SIZE': 10
+}
+
+# Celery configuration options
+CELERY_RESULT_BACKEND = env.str("CELERY_RESULT_BACKEND", "redis://localhost:6379/0")
+CELERYBEAT_SCHEDULER = "django_celery_beat.schedulers:DatabaseScheduler"
+
+CELERY_BROKER_URL = env.str("CELERY_BROKER_URL", "redis://localhost:6379/0")
+# BROKER_URL and REDIS_URL are required to have rabbitmq and redis monitoring.
+# Redis is used in dev env, RabbitMQ on production.
+BROKER_URL = env.str("CELERY_BROKER_URL", "redis://localhost:6379/0")
+REDIS_HOST = env.str("REDIS_HOST", "localhost")
+REDIS_PORT = env.str("REDIS_PORT", "6379")
+REDIS_DB = env.str("REDIS_DB", "0")
+REDIS_URL = f"redis://{REDIS_HOST}:{REDIS_PORT}/{REDIS_DB}"
+
+CELERY_ALWAYS_EAGER = False
+
+CELERY_TASK_SERIALIZER = 'json'
+CELERY_RESULT_SERIALIZER = 'json'
+CELERY_ACCEPT_CONTENT = ['json']
+
+CELERYBEAT_SCHEDULE = {
+    "reminder_check": {
+        "task": 'scheduler.tasks.check_for_scheduled_reminders',
+        "schedule": crontab(minute="*"),
+        "kwargs":{},
+    },
+}
+
+TURN_AUTH_TOKEN = env.str("TURN_AUTH_TOKEN", "")
+TURN_URL = env.str("TURN_URL", "")
