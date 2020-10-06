@@ -143,7 +143,10 @@ CELERY_BROKER_URL = env.str("CELERY_BROKER_URL", "redis://localhost:6379/0")
 # BROKER_URL and REDIS_URL are required to have rabbitmq and redis monitoring.
 # Redis is used in dev env, RabbitMQ on production.
 BROKER_URL = env.str("CELERY_BROKER_URL", "redis://localhost:6379/0")
-REDIS_URL = env.str("REDIS_URL", "redis://localhost:6379/0")
+REDIS_HOST = env.str("REDIS_HOST", "localhost")
+REDIS_PORT = env.str("REDIS_PORT", "6379")
+REDIS_DB = env.str("REDIS_DB", "0")
+REDIS_URL = f"redis://{REDIS_HOST}:{REDIS_PORT}/{REDIS_DB}"
 
 CELERY_ALWAYS_EAGER = False
 

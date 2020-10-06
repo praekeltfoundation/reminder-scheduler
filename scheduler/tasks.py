@@ -12,7 +12,7 @@ from .models import ReminderSchedule
 
 
 logger = get_task_logger(__name__)
-r = redis.StrictRedis(host='localhost', port=6379)
+r = redis.StrictRedis(host=settings.REDIS_HOST, port=settings.REDIS_PORT, db=settings.REDIS_DB)
 
 @app.task(ignore_result=True,)
 def check_for_scheduled_reminders():
