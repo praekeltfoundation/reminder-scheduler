@@ -23,7 +23,8 @@ def check_for_scheduled_reminders():
     reminders_due = ReminderSchedule.objects.filter(
         sent_time__isnull=True,
         schedule_time__lt=threshold,
-        schedule_time__gt=yesterday
+        schedule_time__gt=yesterday,
+        cancelled=False
     )
 
     for reminder in reminders_due.iterator():
@@ -38,7 +39,8 @@ def send_reminder(pk):
     with r.lock("reminder_%d" % pk, timeout=10):
         # Return early if the reminder has already been sent
         try:
-            reminder = ReminderSchedule.objects.get(pk=pk, sent_time__isnull=True)
+            reminder = ReminderSchedule.objects.get(
+                pk=pk, sent_time__isnull=True, cancelled=False)
         except ReminderSchedule.DoesNotExist:
             logger.info("No unsent reminder with pk %d" % pk)
             return

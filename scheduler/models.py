@@ -13,11 +13,12 @@ class ReminderSchedule(models.Model):
     sent_time = models.DateTimeField(null=True, blank=True)
     recipient_id = models.CharField(max_length=30, null=False, blank=False)
     content = models.ForeignKey(ReminderContent, on_delete=models.CASCADE)
+    cancelled = models.BooleanField(null=False, default=False)
 
     class Meta:
         indexes = [
             models.Index(
                 name='sent_time',
                 fields=['sent_time', 'schedule_time'],
-                condition=models.Q(sent_time__isnull=True)),
+                condition=models.Q(sent_time__isnull=True, cancelled=False)),
         ]
