@@ -18,16 +18,25 @@ class ReminderCreate(APIView):
             status = 400
             message = {"contacts.0.wa_id": ["This field is required."]}
             return Response(message, status=status)
-        
+
         content = ReminderContent.objects.last()
 
         # Default to 23 hours but allow us to overwrite it
         delay = int(request.GET.get('hour_delay', 23))
         scheduled_for = timezone.now() + timedelta(hours=delay)
-        ReminderSchedule.objects.create(
+        new_reminder = ReminderSchedule.objects.create(
             schedule_time=scheduled_for,
             recipient_id=recipient_id,
             content=content
         )
+
+        existing_reminders = ReminderSchedule.objects.filter(
+            recipient_id=recipient_id,
+            sent_time__isnull=True,
+            cancelled=False).exclude(pk=new_reminder.pk)
+
+        for reminder in existing_reminders:
+            reminder.cancelled = True
+            reminder.save()
 
         return Response({"accepted": True}, status=201)
