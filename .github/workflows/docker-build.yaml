@@ -1,9 +1,10 @@
 name: Docker Image
 
 on:
+  workflow_dispatch:
   push:
-    tags:
-      - '*'
+    branches:
+      - master
 
 jobs:
   build:
