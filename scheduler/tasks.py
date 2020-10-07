@@ -7,6 +7,7 @@ from celery.utils.log import get_task_logger
 from datetime import timedelta
 from django.conf import settings
 from django.utils import timezone
+from urllib.parse import urljoin
 
 from .models import ReminderSchedule
 
@@ -45,6 +46,34 @@ def send_reminder(pk):
             logger.info("No unsent reminder with pk %d" % pk)
             return
 
+        logger.info("Retrieving contact info")
+        s = requests.Session()
+        s.headers.update({
+                "Authorization": "Bearer %s" % settings.TURN_AUTH_TOKEN,
+            })
+        response = s.get(urljoin(
+                settings.TURN_URL, f"/v1/contacts/{reminder.recipient_id}/profile"),
+            headers={"Accept": "application/vnd.v1+json",}
+            )
+        response.raise_for_status()
+
+        profile = response.json()
+
+        try:
+            opted_in = profile['fields']['stress_optin'].lower()
+        except KeyError:
+            opted_in = "no" # Assume not opted in
+        try:
+            day5_complete = profile['fields']['day5_complete'].lower()
+        except KeyError:
+            day5_complete = "no" # Assume last module not complete
+
+        if day5_complete.lower() == "next" or opted_in.lower() != "yes":
+            reminder.cancelled=True
+            reminder.save()
+            logger.info("Cancelled reminder %d" % pk)
+            return
+
         logger.info("Sending reminder %d" % pk)
         data = {
             "preview_url": False,
@@ -59,8 +88,8 @@ def send_reminder(pk):
             "Authorization": "Bearer %s" % settings.TURN_AUTH_TOKEN,
         }
 
-        response = requests.post(
-            url=settings.TURN_URL,
+        response = s.post(
+            url=urljoin(settings.TURN_URL, "/v1/messages"),
             data=json.dumps(data),
             headers=headers,
         )
