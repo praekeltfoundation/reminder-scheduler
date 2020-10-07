@@ -33,10 +33,8 @@ class ReminderCreate(APIView):
         existing_reminders = ReminderSchedule.objects.filter(
             recipient_id=recipient_id,
             sent_time__isnull=True,
-            cancelled=False).exclude(pk=new_reminder.pk)
-
-        for reminder in existing_reminders:
-            reminder.cancelled = True
-            reminder.save()
+            cancelled=False).exclude(pk=new_reminder.pk).update(
+                cancelled=True
+            )
 
         return Response({"accepted": True}, status=201)
