@@ -61,11 +61,11 @@ def send_reminder(pk):
 
         try:
             opted_in = profile['fields']['stress_optin'].lower()
-        except KeyError:
+        except KeyError, AttributeError:
             opted_in = "no" # Assume not opted in
         try:
             day5_complete = profile['fields']['day5_complete'].lower()
-        except KeyError:
+        except KeyError, AttributeError:
             day5_complete = "no" # Assume last module not complete
 
         if day5_complete.lower() == "next" or opted_in.lower() != "yes":
