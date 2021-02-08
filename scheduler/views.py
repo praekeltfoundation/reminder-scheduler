@@ -1,8 +1,10 @@
+import logging
 import phonenumbers
 import pytz
-from phonenumbers import timezone as ph_timezone
+
 from datetime import timedelta, datetime
 from math import floor
+from phonenumbers import timezone as ph_timezone
 
 from django.conf import settings
 from django.utils import timezone
@@ -11,6 +13,8 @@ from rest_framework.response import Response
 from rest_framework import authentication, permissions, status
 
 from .models import ReminderSchedule, ReminderContent
+
+LOGGER = logging.getLogger(__name__)
 
 
 class ReminderCreate(APIView):
@@ -82,7 +86,8 @@ class GetMsisdnTimezoneTurn(APIView):
             ordered_tzs = sorted(timezones, key=lambda k: k['offset'])
 
             approx_tz = timezones[floor(len(timezones)/2)]["name"]
-            print("available timezones: {}".format(timezones))
-            print("returned timezone: {}".format(approx_tz))
+
+            LOGGER.info("Available timezones: {}. Returned timezone: {}".format(
+                timezones, approx_tz))
 
         return Response({"success": True, "timezone": approx_tz}, status=200)
