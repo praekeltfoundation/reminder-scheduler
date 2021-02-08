@@ -48,6 +48,7 @@ class ReminderCreate(APIView):
 
         return Response({"accepted": True}, status=201)
 
+
 class GetMsisdnTimezoneTurn(APIView):
     def get_400_response(self, data):
         return Response(
@@ -73,7 +74,6 @@ class GetMsisdnTimezoneTurn(APIView):
                 "contacts.0.wa_id": ["This value must be a phone number with a region prefix."]
             })
 
-
         zones = ph_timezone.time_zones_for_number(msisdn)
         if len(zones) == 1:
             approx_tz = zones[0]
@@ -85,9 +85,9 @@ class GetMsisdnTimezoneTurn(APIView):
                 timezones.append({"name": zone, "offset": offset_seconds / 3600})
             ordered_tzs = sorted(timezones, key=lambda k: k['offset'])
 
-            approx_tz = timezones[floor(len(timezones)/2)]["name"]
+            approx_tz = ordered_tzs[floor(len(ordered_tzs) / 2)]["name"]
 
             LOGGER.info("Available timezones: {}. Returned timezone: {}".format(
-                timezones, approx_tz))
+                ordered_tzs, approx_tz))
 
         return Response({"success": True, "timezone": approx_tz}, status=200)

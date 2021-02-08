@@ -4,7 +4,7 @@ from django.test import TestCase
 class GetMsisdnTimezoneTurnTest(TestCase):
     def test_unexpected_data_format_returns_400(self):
         response = self.client.post(
-            "/timezone/turn", data={'contacts':[{'msisdn':'something'}]},
+            "/timezone/turn", data={'contacts': [{'msisdn': 'something'}]},
             content_type='application/json')
 
         self.assertEqual(
@@ -15,7 +15,7 @@ class GetMsisdnTimezoneTurnTest(TestCase):
 
     def test_phonenumber_unparseable_returns_400(self):
         response = self.client.post(
-            "/timezone/turn", data={'contacts':[{'wa_id':'something'}]},
+            "/timezone/turn", data={'contacts': [{'wa_id': 'something'}]},
             content_type='application/json')
 
         self.assertEqual(
@@ -28,7 +28,7 @@ class GetMsisdnTimezoneTurnTest(TestCase):
     def test_not_possible_phonenumber_returns_400(self):
         # If the length of a number doesn't match accepted length for it's region
         response = self.client.post(
-            "/timezone/turn", data={'contacts':[{'wa_id':'120012301'}]},
+            "/timezone/turn", data={'contacts': [{'wa_id': '120012301'}]},
             content_type='application/json')
 
         self.assertEqual(
@@ -41,7 +41,7 @@ class GetMsisdnTimezoneTurnTest(TestCase):
     def test_invalid_phonenumber_returns_400(self):
         # If a phone number is invalid for it's region
         response = self.client.post(
-            "/timezone/turn", data={'contacts':[{'wa_id':'12001230101'}]},
+            "/timezone/turn", data={'contacts': [{'wa_id': '12001230101'}]},
             content_type='application/json')
 
         self.assertEqual(
@@ -53,7 +53,7 @@ class GetMsisdnTimezoneTurnTest(TestCase):
 
     def test_single_timezone_number(self):
         response = self.client.post(
-            "/timezone/turn", data={'contacts':[{'wa_id':'27345678910'}]},
+            "/timezone/turn", data={'contacts': [{'wa_id': '27345678910'}]},
             content_type='application/json')
 
         self.assertEqual(
@@ -64,7 +64,7 @@ class GetMsisdnTimezoneTurnTest(TestCase):
 
     def test_single_timezone_number_returns_one(self):
         response = self.client.post(
-            "/timezone/turn", data={'contacts':[{'wa_id':'61498765432'}]},
+            "/timezone/turn", data={'contacts': [{'wa_id': '61498765432'}]},
             content_type='application/json')
 
         self.assertEqual(
