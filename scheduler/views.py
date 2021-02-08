@@ -1,12 +1,17 @@
-from datetime import timedelta
+import phonenumbers
+import pytz
+from phonenumbers import timezone as ph_timezone
+from datetime import timedelta, datetime
+from math import floor
 
 from django.conf import settings
 from django.utils import timezone
 from rest_framework.views import APIView
 from rest_framework.response import Response
-from rest_framework import authentication, permissions
+from rest_framework import authentication, permissions, status
 
 from .models import ReminderSchedule, ReminderContent
+
 
 class ReminderCreate(APIView):
     queryset = ReminderSchedule.objects.all()
@@ -38,3 +43,46 @@ class ReminderCreate(APIView):
             )
 
         return Response({"accepted": True}, status=201)
+
+class GetMsisdnTimezoneTurn(APIView):
+    def get_400_response(self, data):
+        return Response(
+            data,
+            status=status.HTTP_400_BAD_REQUEST,
+            content_type='application/json')
+
+    def post(self, request, *args, **kwargs):
+        try:
+            recipient_id = request.data['contacts'][0]['wa_id']
+        except KeyError:
+            return self.get_400_response({"contacts.0.wa_id": ["This field is required."]})
+
+        try:
+            msisdn = phonenumbers.parse("+{}".format(recipient_id))
+        except phonenumbers.phonenumberutil.NumberParseException:
+            return self.get_400_response({
+                "contacts.0.wa_id": ["This value must be a phone number with a region prefix."]
+            })
+
+        if not(phonenumbers.is_possible_number(msisdn) and phonenumbers.is_valid_number(msisdn)):
+            return self.get_400_response({
+                "contacts.0.wa_id": ["This value must be a phone number with a region prefix."]
+            })
+
+
+        zones = ph_timezone.time_zones_for_number(msisdn)
+        if len(zones) == 1:
+            approx_tz = zones[0]
+        elif len(zones) > 1:
+            timezones = []
+            for zone in zones:
+                offset = pytz.timezone(zone).utcoffset(datetime.utcnow())
+                offset_seconds = (offset.days * 86400) + offset.seconds
+                timezones.append({"name": zone, "offset": offset_seconds / 3600})
+            ordered_tzs = sorted(timezones, key=lambda k: k['offset'])
+
+            approx_tz = timezones[floor(len(timezones)/2)]["name"]
+            print("available timezones: {}".format(timezones))
+            print("returned timezone: {}".format(approx_tz))
+
+        return Response({"success": True, "timezone": approx_tz}, status=200)

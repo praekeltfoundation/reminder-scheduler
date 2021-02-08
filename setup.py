@@ -19,7 +19,9 @@ setup(
         "psycopg2==2.8.4",
         "sentry-sdk==0.16.3",
         "redis==3.5.3",
-        "requests>=2.24.0"
+        "requests>=2.24.0",
+        "phonenumbers",
+        "pytz"
     ],
     classifiers=[
         "Development Status :: 4 - Beta",
