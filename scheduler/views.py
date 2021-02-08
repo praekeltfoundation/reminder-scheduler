@@ -91,3 +91,35 @@ class GetMsisdnTimezoneTurn(APIView):
                 ordered_tzs, approx_tz))
 
         return Response({"success": True, "timezone": approx_tz}, status=200)
+
+
+class GetMsisdnTimezones(APIView):
+    def get_400_response(self, data):
+        return Response(
+            data,
+            status=status.HTTP_400_BAD_REQUEST,
+            content_type='application/json')
+
+    def post(self, request, *args, **kwargs):
+        try:
+            msisdn = request.data['msisdn']
+        except KeyError:
+            return self.get_400_response({"msisdn": ["This field is required."]})
+
+        msisdn = msisdn if msisdn.startswith("+") else "+" + msisdn
+
+        try:
+            msisdn = phonenumbers.parse(msisdn)
+        except phonenumbers.phonenumberutil.NumberParseException:
+            return self.get_400_response({
+                "msisdn": ["This value must be a phone number with a region prefix."]
+            })
+
+        if not(phonenumbers.is_possible_number(msisdn) and phonenumbers.is_valid_number(msisdn)):
+            return self.get_400_response({
+                "msisdn": ["This value must be a phone number with a region prefix."]
+            })
+
+        zones = list(ph_timezone.time_zones_for_number(msisdn))
+
+        return Response({"success": True, "timezones": zones}, status=200)

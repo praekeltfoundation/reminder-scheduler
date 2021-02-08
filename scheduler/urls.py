@@ -1,5 +1,5 @@
 from django.conf.urls import url
-from .views import ReminderCreate, GetMsisdnTimezoneTurn
+from .views import ReminderCreate, GetMsisdnTimezoneTurn, GetMsisdnTimezones
 
 urlpatterns = [
     url(
@@ -10,6 +10,11 @@ urlpatterns = [
     url(
         r"^timezone/turn",
         GetMsisdnTimezoneTurn.as_view(),
-        name="timezone-check-turn",
+        name="get-timezone-turn",
+    ),
+    url(
+        r"^timezones",
+        GetMsisdnTimezones.as_view(),
+        name="get-timezones",
     ),
 ]
