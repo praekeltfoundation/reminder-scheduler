@@ -50,6 +50,9 @@ class ReminderCreate(APIView):
 
 
 class GetMsisdnTimezoneTurn(APIView):
+    authentication_classes = [authentication.BasicAuthentication]
+    permission_classes = [permissions.IsAdminUser]
+
     def get_400_response(self, data):
         return Response(
             data,
@@ -94,6 +97,9 @@ class GetMsisdnTimezoneTurn(APIView):
 
 
 class GetMsisdnTimezones(APIView):
+    authentication_classes = [authentication.BasicAuthentication]
+    permission_classes = [permissions.IsAdminUser]
+
     def get_400_response(self, data):
         return Response(
             data,
