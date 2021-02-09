@@ -27,8 +27,8 @@ class GetMsisdnTimezoneTurnTest(APITestCase):
             content_type='application/json')
 
         self.assertEqual(
-            response.data,
-            {"contacts.0.wa_id": ["This field is required."]}
+            response.data["contacts"][0]["wa_id"][0],
+            "This field is required."
         )
         self.assertEqual(response.status_code, 400)
 
@@ -40,9 +40,8 @@ class GetMsisdnTimezoneTurnTest(APITestCase):
             content_type='application/json')
 
         self.assertEqual(
-            response.data,
-            {"contacts.0.wa_id": ['This value must be a phone number with a region '
-                                  'prefix.']}
+            response.data["contacts"][0]["wa_id"][0],
+            'This value must be a phone number with a region prefix.'
         )
         self.assertEqual(response.status_code, 400)
 
@@ -55,9 +54,8 @@ class GetMsisdnTimezoneTurnTest(APITestCase):
             content_type='application/json')
 
         self.assertEqual(
-            response.data,
-            {"contacts.0.wa_id": ['This value must be a phone number with a region '
-                                  'prefix.']}
+            response.data["contacts"][0]["wa_id"][0],
+            'This value must be a phone number with a region prefix.'
         )
         self.assertEqual(response.status_code, 400)
 
@@ -70,9 +68,8 @@ class GetMsisdnTimezoneTurnTest(APITestCase):
             content_type='application/json')
 
         self.assertEqual(
-            response.data,
-            {"contacts.0.wa_id": ['This value must be a phone number with a region '
-                                  'prefix.']}
+            response.data["contacts"][0]["wa_id"][0],
+            'This value must be a phone number with a region prefix.'
         )
         self.assertEqual(response.status_code, 400)
 

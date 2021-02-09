@@ -11,9 +11,10 @@ from urllib.parse import urljoin
 
 from django.conf import settings
 from django.utils import timezone
-from rest_framework.views import APIView
-from rest_framework.response import Response
 from rest_framework import authentication, permissions, status
+from rest_framework.exceptions import ValidationError
+from rest_framework.response import Response
+from rest_framework.views import APIView
 
 from .models import ReminderSchedule, ReminderContent
 
@@ -56,12 +57,6 @@ class GetMsisdnTimezoneTurn(APIView):
     authentication_classes = [authentication.BasicAuthentication]
     permission_classes = [permissions.IsAdminUser]
 
-    def get_400_response(self, data):
-        return Response(
-            data,
-            status=status.HTTP_400_BAD_REQUEST,
-            content_type='application/json')
-
     def update_profile(self, recipient_id, timezone):
         response = requests.patch(
             urljoin(settings.TURN_URL, f"/v1/contacts/{recipient_id}/profile"),
@@ -78,19 +73,17 @@ class GetMsisdnTimezoneTurn(APIView):
         try:
             recipient_id = request.data['contacts'][0]['wa_id']
         except KeyError:
-            return self.get_400_response({"contacts.0.wa_id": ["This field is required."]})
+            raise ValidationError({"contacts":[{"wa_id": ["This field is required."]}]})
 
         try:
             msisdn = phonenumbers.parse("+{}".format(recipient_id))
         except phonenumbers.phonenumberutil.NumberParseException:
-            return self.get_400_response({
-                "contacts.0.wa_id": ["This value must be a phone number with a region prefix."]
-            })
+            raise ValidationError(
+                {"contacts":[{"wa_id": ["This value must be a phone number with a region prefix."]}]})
 
         if not(phonenumbers.is_possible_number(msisdn) and phonenumbers.is_valid_number(msisdn)):
-            return self.get_400_response({
-                "contacts.0.wa_id": ["This value must be a phone number with a region prefix."]
-            })
+            raise ValidationError(
+                {"contacts":[{"wa_id": ["This value must be a phone number with a region prefix."]}]})
 
         zones = ph_timezone.time_zones_for_number(msisdn)
         if len(zones) == 1:
@@ -118,31 +111,23 @@ class GetMsisdnTimezones(APIView):
     authentication_classes = [authentication.BasicAuthentication]
     permission_classes = [permissions.IsAdminUser]
 
-    def get_400_response(self, data):
-        return Response(
-            data,
-            status=status.HTTP_400_BAD_REQUEST,
-            content_type='application/json')
-
     def post(self, request, *args, **kwargs):
         try:
             msisdn = request.data['msisdn']
         except KeyError:
-            return self.get_400_response({"msisdn": ["This field is required."]})
+            raise ValidationError({"msisdn": ["This field is required."]})
 
         msisdn = msisdn if msisdn.startswith("+") else "+" + msisdn
 
         try:
             msisdn = phonenumbers.parse(msisdn)
         except phonenumbers.phonenumberutil.NumberParseException:
-            return self.get_400_response({
-                "msisdn": ["This value must be a phone number with a region prefix."]
-            })
+            raise ValidationError(
+                {"msisdn": ["This value must be a phone number with a region prefix."]})
 
         if not(phonenumbers.is_possible_number(msisdn) and phonenumbers.is_valid_number(msisdn)):
-            return self.get_400_response({
-                "msisdn": ["This value must be a phone number with a region prefix."]
-            })
+            raise ValidationError(
+                {"msisdn": ["This value must be a phone number with a region prefix."]})
 
         zones = list(ph_timezone.time_zones_for_number(msisdn))
 
