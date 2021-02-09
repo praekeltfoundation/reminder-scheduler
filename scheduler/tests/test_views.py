@@ -108,9 +108,11 @@ class GetMsisdnTimezoneTurnTest(APITestCase):
     def test_save_param_true_updates_turn_profile(self):
         self.client.force_authenticate(user=self.admin_user)
 
-        responses.add(responses.PATCH,
+        responses.add(
+            responses.PATCH,
             'https://fake_turn.url/v1/contacts/61498765432/profile',
-            body=json.dumps({"version":"0.0.1-alpha", "fields":{"timezone":"Australia/Eucla"}}),
+            body=json.dumps(
+                {"version": "0.0.1-alpha", "fields": {"timezone": "Australia/Eucla"}}),
             match=[responses.json_params_matcher({"timezone": "Australia/Eucla"})])
 
         response = self.client.post(
@@ -123,7 +125,8 @@ class GetMsisdnTimezoneTurnTest(APITestCase):
             {"success": True, "timezone": "Australia/Eucla"}
         )
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(responses.calls[0].request.headers['Authorization'],
+        self.assertEqual(
+            responses.calls[0].request.headers['Authorization'],
             "Bearer fake-turn-token")
 
     @responses.activate
@@ -132,18 +135,20 @@ class GetMsisdnTimezoneTurnTest(APITestCase):
     def test_save_param_true_raises_error_if_patch_fails(self):
         self.client.force_authenticate(user=self.admin_user)
 
-        responses.add(responses.PATCH,
+        responses.add(
+            responses.PATCH,
             'https://fake_turn.url/v1/contacts/61498765432/profile',
             status=404,
             match=[responses.json_params_matcher({"timezone": "Australia/Eucla"})])
 
         with self.assertRaises(HTTPError):
-            response = self.client.post(
+            self.client.post(
                 "/scheduler/timezone/turn?save=true",
                 data=json.dumps({'contacts': [{'wa_id': '61498765432'}]}),
                 content_type='application/json')
 
-        self.assertEqual(responses.calls[0].request.headers['Authorization'],
+        self.assertEqual(
+            responses.calls[0].request.headers['Authorization'],
             "Bearer fake-turn-token")
 
 

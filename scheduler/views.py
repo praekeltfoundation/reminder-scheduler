@@ -63,13 +63,14 @@ class GetMsisdnTimezoneTurn(APIView):
             content_type='application/json')
 
     def update_profile(self, recipient_id, timezone):
-        response = requests.patch(urljoin(
-                settings.TURN_URL, f"/v1/contacts/{recipient_id}/profile"),
+        response = requests.patch(
+            urljoin(settings.TURN_URL, f"/v1/contacts/{recipient_id}/profile"),
             data=json.dumps({"timezone": timezone}),
-            headers={"Accept": "application/vnd.v1+json",
+            headers={
+                "Accept": "application/vnd.v1+json",
                 "Authorization": "Bearer %s" % settings.TURN_AUTH_TOKEN,
                 "Content-Type": "application/json"
-                },
+            },
         )
         response.raise_for_status()
 
@@ -107,7 +108,7 @@ class GetMsisdnTimezoneTurn(APIView):
             LOGGER.info("Available timezones: {}. Returned timezone: {}".format(
                 ordered_tzs, approx_tz))
 
-        if (request.query_params.get('save', 'false').lower()=='true'):
+        if (request.query_params.get('save', 'false').lower() == 'true'):
             self.update_profile(recipient_id, approx_tz)
 
         return Response({"success": True, "timezone": approx_tz}, status=200)
