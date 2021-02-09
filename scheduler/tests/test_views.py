@@ -13,7 +13,8 @@ class GetMsisdnTimezoneTurnTest(APITestCase):
 
     def test_login_required_to_get_timezones(self):
         response = self.client.post(
-            "/timezone/turn", json={'contacts': [{'msisdn': 'something'}]},
+            "/scheduler/timezone/turn",
+            json={'contacts': [{'msisdn': 'something'}]},
             content_type='application/json')
 
         self.assertEqual(response.status_code, 401)
@@ -21,7 +22,8 @@ class GetMsisdnTimezoneTurnTest(APITestCase):
     def test_unexpected_data_format_returns_400(self):
         self.client.force_authenticate(user=self.admin_user)
         response = self.client.post(
-            "/timezone/turn", data=json.dumps({'contacts': [{'msisdn': 'something'}]}),
+            "/scheduler/timezone/turn",
+            data=json.dumps({'contacts': [{'msisdn': 'something'}]}),
             content_type='application/json')
 
         self.assertEqual(
@@ -33,7 +35,8 @@ class GetMsisdnTimezoneTurnTest(APITestCase):
     def test_phonenumber_unparseable_returns_400(self):
         self.client.force_authenticate(user=self.admin_user)
         response = self.client.post(
-            "/timezone/turn", data=json.dumps({'contacts': [{'wa_id': 'something'}]}),
+            "/scheduler/timezone/turn",
+            data=json.dumps({'contacts': [{'wa_id': 'something'}]}),
             content_type='application/json')
 
         self.assertEqual(
@@ -47,7 +50,8 @@ class GetMsisdnTimezoneTurnTest(APITestCase):
         # If the length of a number doesn't match accepted length for it's region
         self.client.force_authenticate(user=self.admin_user)
         response = self.client.post(
-            "/timezone/turn", data=json.dumps({'contacts': [{'wa_id': '120012301'}]}),
+            "/scheduler/timezone/turn",
+            data=json.dumps({'contacts': [{'wa_id': '120012301'}]}),
             content_type='application/json')
 
         self.assertEqual(
@@ -61,7 +65,8 @@ class GetMsisdnTimezoneTurnTest(APITestCase):
         # If a phone number is invalid for it's region
         self.client.force_authenticate(user=self.admin_user)
         response = self.client.post(
-            "/timezone/turn", data=json.dumps({'contacts': [{'wa_id': '12001230101'}]}),
+            "/scheduler/timezone/turn",
+            data=json.dumps({'contacts': [{'wa_id': '12001230101'}]}),
             content_type='application/json')
 
         self.assertEqual(
@@ -74,7 +79,8 @@ class GetMsisdnTimezoneTurnTest(APITestCase):
     def test_single_timezone_number(self):
         self.client.force_authenticate(user=self.admin_user)
         response = self.client.post(
-            "/timezone/turn", data=json.dumps({'contacts': [{'wa_id': '27345678910'}]}),
+            "/scheduler/timezone/turn",
+            data=json.dumps({'contacts': [{'wa_id': '27345678910'}]}),
             content_type='application/json')
 
         self.assertEqual(
@@ -86,7 +92,8 @@ class GetMsisdnTimezoneTurnTest(APITestCase):
     def test_multiple_timezone_number_returns_one(self):
         self.client.force_authenticate(user=self.admin_user)
         response = self.client.post(
-            "/timezone/turn", data=json.dumps({'contacts': [{'wa_id': '61498765432'}]}),
+            "/scheduler/timezone/turn",
+            data=json.dumps({'contacts': [{'wa_id': '61498765432'}]}),
             content_type='application/json')
 
         self.assertEqual(
@@ -107,7 +114,8 @@ class GetMsisdnTimezoneTurnTest(APITestCase):
             match=[responses.json_params_matcher({"timezone": "Australia/Eucla"})])
 
         response = self.client.post(
-            "/timezone/turn?save=true", data=json.dumps({'contacts': [{'wa_id': '61498765432'}]}),
+            "/scheduler/timezone/turn?save=true",
+            data=json.dumps({'contacts': [{'wa_id': '61498765432'}]}),
             content_type='application/json')
 
         self.assertEqual(
@@ -131,7 +139,8 @@ class GetMsisdnTimezoneTurnTest(APITestCase):
 
         with self.assertRaises(HTTPError):
             response = self.client.post(
-                "/timezone/turn?save=true", data=json.dumps({'contacts': [{'wa_id': '61498765432'}]}),
+                "/scheduler/timezone/turn?save=true",
+                data=json.dumps({'contacts': [{'wa_id': '61498765432'}]}),
                 content_type='application/json')
 
         self.assertEqual(responses.calls[0].request.headers['Authorization'],
@@ -145,7 +154,8 @@ class GetMsisdnTimezonesTest(APITestCase):
 
     def test_auth_required_to_get_timezones(self):
         response = self.client.post(
-            "/timezone/turn", data={'contacts': [{'msisdn': 'something'}]},
+            "/scheduler/timezone/turn",
+            data={'contacts': [{'msisdn': 'something'}]},
             content_type='application/json')
 
         self.assertEqual(response.status_code, 401)
@@ -153,7 +163,8 @@ class GetMsisdnTimezonesTest(APITestCase):
     def test_no_msisdn_returns_400(self):
         self.client.force_authenticate(user=self.admin_user)
         response = self.client.post(
-            "/timezones/", data=json.dumps({'contact': {'urn': 'something'}}),
+            "/scheduler/timezones/",
+            data=json.dumps({'contact': {'urn': 'something'}}),
             content_type='application/json')
 
         self.assertEqual(
@@ -165,7 +176,8 @@ class GetMsisdnTimezonesTest(APITestCase):
     def test_phonenumber_unparseable_returns_400(self):
         self.client.force_authenticate(user=self.admin_user)
         response = self.client.post(
-            "/timezones/", data=json.dumps({'msisdn': 'something'}),
+            "/scheduler/timezones/",
+            data=json.dumps({'msisdn': 'something'}),
             content_type='application/json')
 
         self.assertEqual(
@@ -178,7 +190,8 @@ class GetMsisdnTimezonesTest(APITestCase):
         # If the length of a number doesn't match accepted length for it's region
         self.client.force_authenticate(user=self.admin_user)
         response = self.client.post(
-            "/timezones/", data=json.dumps({'msisdn': '120012301'}),
+            "/scheduler/timezones/",
+            data=json.dumps({'msisdn': '120012301'}),
             content_type='application/json')
 
         self.assertEqual(
@@ -191,7 +204,8 @@ class GetMsisdnTimezonesTest(APITestCase):
         # If a phone number is invalid for it's region
         self.client.force_authenticate(user=self.admin_user)
         response = self.client.post(
-            "/timezones/", data=json.dumps({'msisdn': '12001230101'}),
+            "/scheduler/timezones/",
+            data=json.dumps({'msisdn': '12001230101'}),
             content_type='application/json')
 
         self.assertEqual(
@@ -203,7 +217,8 @@ class GetMsisdnTimezonesTest(APITestCase):
     def test_phonenumber_with_plus(self):
         self.client.force_authenticate(user=self.admin_user)
         response = self.client.post(
-            "/timezones/", data=json.dumps({'msisdn': '+27345678910'}),
+            "/scheduler/timezones/",
+            data=json.dumps({'msisdn': '+27345678910'}),
             content_type='application/json')
 
         self.assertEqual(
@@ -215,7 +230,8 @@ class GetMsisdnTimezonesTest(APITestCase):
     def test_single_timezone_number(self):
         self.client.force_authenticate(user=self.admin_user)
         response = self.client.post(
-            "/timezones/", data=json.dumps({'msisdn': '27345678910'}),
+            "/scheduler/timezones/",
+            data=json.dumps({'msisdn': '27345678910'}),
             content_type='application/json')
 
         self.assertEqual(
@@ -227,7 +243,8 @@ class GetMsisdnTimezonesTest(APITestCase):
     def test_multiple_timezone_number_returns_all(self):
         self.client.force_authenticate(user=self.admin_user)
         response = self.client.post(
-            "/timezones/", data=json.dumps({'msisdn': '61498765432'}),
+            "/scheduler/timezones/",
+            data=json.dumps({'msisdn': '61498765432'}),
             content_type='application/json')
 
         self.assertEqual(
