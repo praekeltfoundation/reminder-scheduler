@@ -1,10 +1,13 @@
+import json
 import logging
 import phonenumbers
 import pytz
+import requests
 
 from datetime import timedelta, datetime
 from math import floor
 from phonenumbers import timezone as ph_timezone
+from urllib.parse import urljoin
 
 from django.conf import settings
 from django.utils import timezone
@@ -59,6 +62,17 @@ class GetMsisdnTimezoneTurn(APIView):
             status=status.HTTP_400_BAD_REQUEST,
             content_type='application/json')
 
+    def update_profile(self, recipient_id, timezone):
+        response = requests.patch(urljoin(
+                settings.TURN_URL, f"/v1/contacts/{recipient_id}/profile"),
+            data=json.dumps({"timezone": timezone}),
+            headers={"Accept": "application/vnd.v1+json",
+                "Authorization": "Bearer %s" % settings.TURN_AUTH_TOKEN,
+                "Content-Type": "application/json"
+                },
+        )
+        response.raise_for_status()
+
     def post(self, request, *args, **kwargs):
         try:
             recipient_id = request.data['contacts'][0]['wa_id']
@@ -92,6 +106,9 @@ class GetMsisdnTimezoneTurn(APIView):
 
             LOGGER.info("Available timezones: {}. Returned timezone: {}".format(
                 ordered_tzs, approx_tz))
+
+        if (request.query_params.get('save', 'false').lower()=='true'):
+            self.update_profile(recipient_id, approx_tz)
 
         return Response({"success": True, "timezone": approx_tz}, status=200)
 

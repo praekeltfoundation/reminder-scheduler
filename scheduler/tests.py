@@ -1,6 +1,9 @@
 import json
+import responses
 from django.contrib.auth.models import User
+from django.test import override_settings
 from rest_framework.test import APITestCase
+from requests.exceptions import HTTPError
 
 
 class GetMsisdnTimezoneTurnTest(APITestCase):
@@ -91,6 +94,48 @@ class GetMsisdnTimezoneTurnTest(APITestCase):
             {"success": True, "timezone": "Australia/Eucla"}
         )
         self.assertEqual(response.status_code, 200)
+
+    @responses.activate
+    @override_settings(TURN_URL='https://fake_turn.url')
+    @override_settings(TURN_AUTH_TOKEN='fake-turn-token')
+    def test_save_param_true_updates_turn_profile(self):
+        self.client.force_authenticate(user=self.admin_user)
+
+        responses.add(responses.PATCH,
+            'https://fake_turn.url/v1/contacts/61498765432/profile',
+            body=json.dumps({"version":"0.0.1-alpha", "fields":{"timezone":"Australia/Eucla"}}),
+            match=[responses.json_params_matcher({"timezone": "Australia/Eucla"})])
+
+        response = self.client.post(
+            "/timezone/turn?save=true", data=json.dumps({'contacts': [{'wa_id': '61498765432'}]}),
+            content_type='application/json')
+
+        self.assertEqual(
+            response.data,
+            {"success": True, "timezone": "Australia/Eucla"}
+        )
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(responses.calls[0].request.headers['Authorization'],
+            "Bearer fake-turn-token")
+
+    @responses.activate
+    @override_settings(TURN_URL='https://fake_turn.url')
+    @override_settings(TURN_AUTH_TOKEN='fake-turn-token')
+    def test_save_param_true_raises_error_if_patch_fails(self):
+        self.client.force_authenticate(user=self.admin_user)
+
+        responses.add(responses.PATCH,
+            'https://fake_turn.url/v1/contacts/61498765432/profile',
+            status=404,
+            match=[responses.json_params_matcher({"timezone": "Australia/Eucla"})])
+
+        with self.assertRaises(HTTPError):
+            response = self.client.post(
+                "/timezone/turn?save=true", data=json.dumps({'contacts': [{'wa_id': '61498765432'}]}),
+                content_type='application/json')
+
+        self.assertEqual(responses.calls[0].request.headers['Authorization'],
+            "Bearer fake-turn-token")
 
 
 class GetMsisdnTimezonesTest(APITestCase):
