@@ -80,7 +80,7 @@ class GetMsisdnTimezoneTurnTest(APITestCase):
         )
         self.assertEqual(response.status_code, 200)
 
-    def test_single_timezone_number_returns_one(self):
+    def test_multiple_timezone_number_returns_one(self):
         self.client.force_authenticate(user=self.admin_user)
         response = self.client.post(
             "/timezone/turn", data=json.dumps({'contacts': [{'wa_id': '61498765432'}]}),
@@ -179,7 +179,7 @@ class GetMsisdnTimezonesTest(APITestCase):
         )
         self.assertEqual(response.status_code, 200)
 
-    def test_single_timezone_number_returns_one(self):
+    def test_multiple_timezone_number_returns_all(self):
         self.client.force_authenticate(user=self.admin_user)
         response = self.client.post(
             "/timezones/", data=json.dumps({'msisdn': '61498765432'}),
