@@ -93,3 +93,41 @@ class QuickReplyViewTests(APITestCase):
             call.request.headers["X-Turn-Hook-Signature"],
             generate_hmac_signature(call.request.body.decode(), quickreply.hmac_secret),
         )
+
+    @responses.activate
+    def test_non_quickreply(self):
+        """
+        If the message is not a quickreply, then it should be forwarded as is to the
+        configured URL
+        """
+        quickreply: QuickReplyDestination = QuickReplyDestination.objects.create(
+            url="https://example.org", hmac_secret="test-secret"
+        )
+        url: str = reverse("quickreply-message", args=[quickreply.pk])
+        data = {
+            "messages": [
+                {
+                    "text": {"body": "No"},
+                    "from": "16505551234",
+                    "id": "ABGGFmkiWVVPAgo-sKD87hgxPHdF",
+                    "timestamp": "1591210827",
+                    "type": "text",
+                }
+            ]
+        }
+        body = json.dumps(data, separators=(",", ":"))
+        signature = generate_hmac_signature(body, quickreply.hmac_secret)
+
+        responses.add(
+            method=responses.POST,
+            url="https://example.org",
+            match=[responses.json_params_matcher(data)],
+        )
+
+        response = self.client.post(
+            url, data, format="json", HTTP_X_TURN_HOOK_SIGNATURE=signature
+        )
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+        [call] = responses.calls
+        self.assertEqual(call.request.headers["X-Turn-Hook-Signature"], signature)
