@@ -4,6 +4,7 @@ import json
 from rest_framework.decorators import action
 from rest_framework.exceptions import AuthenticationFailed
 from rest_framework.response import Response
+from rest_framework.serializers import Serializer
 from rest_framework.viewsets import GenericViewSet
 
 from quickreplies.models import QuickReply
@@ -22,6 +23,7 @@ def validate_hmac_signature(secret, signature, body):
 
 class QuickReplyViewSet(GenericViewSet):
     queryset = QuickReply.objects.all()
+    serializer_class = Serializer
 
     @action(detail=True, methods=["POST"])
     def message(self, request, pk=None):
