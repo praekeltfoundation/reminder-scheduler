@@ -8,7 +8,7 @@ from django.urls import reverse
 from rest_framework import status
 from rest_framework.test import APITestCase
 
-from quickreplies.models import QuickReply
+from quickreplies.models import QuickReplyDestination
 
 
 def generate_hmac_signature(body: str, secret: str) -> str:
@@ -22,7 +22,7 @@ class QuickReplyViewTests(APITestCase):
         If the HMAC secret is configured, and there's no HMAC header, or it's invalid,
         then we should return a 401
         """
-        quickreply = QuickReply.objects.create(hmac_secret="test-secret")
+        quickreply = QuickReplyDestination.objects.create(hmac_secret="test-secret")
         url = reverse("quickreply-message", args=[quickreply.pk])
         data = {"test": "body"}
 
@@ -40,7 +40,7 @@ class QuickReplyViewTests(APITestCase):
         If the message is a quickreply, then it should be forwarded as a normal message
         to the configured URL
         """
-        quickreply: QuickReply = QuickReply.objects.create(
+        quickreply: QuickReplyDestination = QuickReplyDestination.objects.create(
             url="https://example.org", hmac_secret="test-secret"
         )
         url: str = reverse("quickreply-message", args=[quickreply.pk])

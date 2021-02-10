@@ -1,10 +1,10 @@
 from django.contrib import admin
 from django.urls import reverse
 
-from quickreplies.models import QuickReply
+from quickreplies.models import QuickReplyDestination
 
 
-@admin.register(QuickReply)
+@admin.register(QuickReplyDestination)
 class QuickReplyAdmin(admin.ModelAdmin):
     list_display = ("url", "hmac_secret")
 

@@ -7,7 +7,7 @@ from rest_framework.response import Response
 from rest_framework.serializers import Serializer
 from rest_framework.viewsets import GenericViewSet
 
-from quickreplies.models import QuickReply
+from quickreplies.models import QuickReplyDestination
 from quickreplies.tasks import http_request
 from quickreplies.utils import generate_hmac_signature
 
@@ -22,7 +22,7 @@ def validate_hmac_signature(secret, signature, body):
 
 
 class QuickReplyViewSet(GenericViewSet):
-    queryset = QuickReply.objects.all()
+    queryset = QuickReplyDestination.objects.all()
     serializer_class = Serializer
 
     @action(detail=True, methods=["POST"])
