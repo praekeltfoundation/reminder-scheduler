@@ -1,18 +1,18 @@
-from django.conf.urls import url
+from django.urls import re_path
 from .views import ReminderCreate, GetMsisdnTimezoneTurn, GetMsisdnTimezones
 
 urlpatterns = [
-    url(
+    re_path(
         r"^reminders",
         ReminderCreate.as_view(),
         name="reminder-create",
     ),
-    url(
+    re_path(
         r"^timezone/turn",
         GetMsisdnTimezoneTurn.as_view(),
         name="get-timezone-turn",
     ),
-    url(
+    re_path(
         r"^timezones",
         GetMsisdnTimezones.as_view(),
         name="get-timezones",
