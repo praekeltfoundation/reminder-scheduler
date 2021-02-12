@@ -21,6 +21,21 @@ from .models import ReminderSchedule, ReminderContent
 LOGGER = logging.getLogger(__name__)
 
 
+def get_middle_tz(zones):
+    timezones = []
+    for zone in zones:
+        offset = pytz.timezone(zone).utcoffset(datetime.utcnow())
+        offset_seconds = (offset.days * 86400) + offset.seconds
+        timezones.append({"name": zone, "offset": offset_seconds / 3600})
+    ordered_tzs = sorted(timezones, key=lambda k: k['offset'])
+
+    approx_tz = ordered_tzs[floor(len(ordered_tzs) / 2)]["name"]
+
+    LOGGER.info("Available timezones: {}. Returned timezone: {}".format(
+        ordered_tzs, approx_tz))
+    return approx_tz
+
+
 class ReminderCreate(APIView):
     queryset = ReminderSchedule.objects.all()
 
@@ -89,17 +104,7 @@ class GetMsisdnTimezoneTurn(APIView):
         if len(zones) == 1:
             approx_tz = zones[0]
         elif len(zones) > 1:
-            timezones = []
-            for zone in zones:
-                offset = pytz.timezone(zone).utcoffset(datetime.utcnow())
-                offset_seconds = (offset.days * 86400) + offset.seconds
-                timezones.append({"name": zone, "offset": offset_seconds / 3600})
-            ordered_tzs = sorted(timezones, key=lambda k: k['offset'])
-
-            approx_tz = ordered_tzs[floor(len(ordered_tzs) / 2)]["name"]
-
-            LOGGER.info("Available timezones: {}. Returned timezone: {}".format(
-                ordered_tzs, approx_tz))
+            approx_tz = get_middle_tz(zones)
 
         if (request.query_params.get('save', 'false').lower() == 'true'):
             self.update_profile(recipient_id, approx_tz)
@@ -130,5 +135,9 @@ class GetMsisdnTimezones(APIView):
                 {"msisdn": ["This value must be a phone number with a region prefix."]})
 
         zones = list(ph_timezone.time_zones_for_number(msisdn))
+
+        if (len(zones) > 1 and 
+                request.query_params.get('return_one', 'false').lower() == 'true'):
+            zones = [get_middle_tz(zones)]
 
         return Response({"success": True, "timezones": zones}, status=200)
