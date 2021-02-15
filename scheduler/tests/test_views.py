@@ -261,3 +261,16 @@ class GetMsisdnTimezonesTest(APITestCase):
                 'Indian/Cocos']}
         )
         self.assertEqual(response.status_code, 200)
+
+    def test_return_one_flag_gives_middle_timezone(self):
+        self.client.force_authenticate(user=self.admin_user)
+        response = self.client.post(
+            "/scheduler/timezones/?return_one=true",
+            data=json.dumps({'msisdn': '61498765432'}),
+            content_type='application/json')
+
+        self.assertEqual(
+            response.data,
+            {"success": True, "timezones": ['Australia/Eucla']}
+        )
+        self.assertEqual(response.status_code, 200)
