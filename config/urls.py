@@ -5,5 +5,6 @@ urlpatterns = [
     path("admin/", admin.site.urls),
     path("", include("scheduler.urls")),  # To be removed
     path("scheduler/", include("scheduler.urls")),
-    path("quickreplies/", include("quickreplies.urls"))
+    path("quickreplies/", include("quickreplies.urls")),
+    path("rapidpro_api/", include("rapidpro_api.urls")),
 ]

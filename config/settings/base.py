@@ -45,6 +45,7 @@ INSTALLED_APPS = [
     "rest_framework",
     "scheduler",
     "quickreplies",
+    "rapidpro_api",
 ]
 
 MIDDLEWARE = [
