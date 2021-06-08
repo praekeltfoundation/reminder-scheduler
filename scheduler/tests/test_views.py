@@ -1,9 +1,10 @@
 import json
+
 import responses
 from django.contrib.auth.models import User
 from django.test import override_settings
-from rest_framework.test import APITestCase
 from requests.exceptions import HTTPError
+from rest_framework.test import APITestCase
 
 
 class GetMsisdnTimezoneTurnTest(APITestCase):

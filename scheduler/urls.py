@@ -1,5 +1,6 @@
 from django.urls import re_path
-from .views import ReminderCreate, GetMsisdnTimezoneTurn, GetMsisdnTimezones
+
+from .views import GetMsisdnTimezones, GetMsisdnTimezoneTurn, ReminderCreate
 
 urlpatterns = [
     re_path(

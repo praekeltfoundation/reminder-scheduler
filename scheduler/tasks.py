@@ -1,16 +1,16 @@
 import json
-import redis
-import requests
-
-from config.celery import app
-from celery.utils.log import get_task_logger
 from datetime import timedelta
-from django.conf import settings
-from django.utils import timezone
 from urllib.parse import urljoin
 
-from .models import ReminderSchedule
+import redis
+import requests
+from celery.utils.log import get_task_logger
+from django.conf import settings
+from django.utils import timezone
 
+from config.celery import app
+
+from .models import ReminderSchedule
 
 logger = get_task_logger(__name__)
 r = redis.StrictRedis(
