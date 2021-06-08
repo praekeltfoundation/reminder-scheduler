@@ -1,0 +1,19 @@
+language: python
+python: "3.7"
+cache: pip
+
+matrix:
+  include:
+    # Run tests
+    - addons:
+        postgresql: "9.4"
+      services:
+        - postgresql
+      install:
+        - "pip install -r requirements.txt"
+        - "pip install -r requirements-dev.txt"
+      script:
+        - flake8
+        - py.test
+        - createdb reminder_scheduler
+        - python manage.py makemigrations --dry-run | grep 'No changes detected' || (echo 'There are changes which require migrations.' && exit 1)
