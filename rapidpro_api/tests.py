@@ -6,6 +6,7 @@ from rest_framework import status
 from rest_framework.test import APITestCase
 
 from rapidpro_api.models import TurnRapidproConnection
+from rapidpro_api.tasks import get_turn_field_value
 from quickreplies.tests import generate_hmac_signature
 
 class RapidproApiViewTests(APITestCase):
@@ -129,21 +130,8 @@ class RapidproApiViewTests(APITestCase):
             json={"fields": {"existing_filed": "turn_value"}}
         )
 
-        url = "{}?turn_field=not_existing_field&rp_field=test_rp_field".format(
-            reverse("profileSync-profileSync", args=[connection.pk]))
-        data = {
-            "contacts": [{
-                "profile": {"name": "Example User"},
-                "wa_id": "16505551234"
-            }]
-        }
-        response = self.client.post(
-            url, data, format="json"
-        )
-        self.assertEqual(
-            response.data["turn_field"], "Key not found in profile."
-        )
-        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        with self.assertRaises(KeyError):
+            get_turn_field_value(connection, "not_existing_field", "16505551234")
 
     def test_profileSync_required_fields(self):
         """
