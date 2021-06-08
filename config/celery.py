@@ -10,7 +10,7 @@ from sentry_sdk.integrations.celery import CeleryIntegration
 # set the default Django settings module for the 'celery' program.
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "config.settings.production")
 
-app = Celery('')
+app = Celery("")
 
 # Using a string here means the worker doesn't have to serialize
 # the configuration object to child processes.

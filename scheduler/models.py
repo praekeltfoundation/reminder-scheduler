@@ -19,7 +19,8 @@ class ReminderSchedule(models.Model):
     class Meta:
         indexes = [
             models.Index(
-                name='schedule_time_partial',
-                fields=['schedule_time'],
-                condition=models.Q(sent_time__isnull=True, cancelled=False)),
+                name="schedule_time_partial",
+                fields=["schedule_time"],
+                condition=models.Q(sent_time__isnull=True, cancelled=False),
+            ),
         ]
