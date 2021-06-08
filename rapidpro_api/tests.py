@@ -12,7 +12,7 @@ class RapidproApiViewTests(APITestCase):
     def test_hmac_missing(self):
         """
         If the HMAC secret is configured, and there's no HMAC header, or it's invalid,
-        then we should return a 401
+        then we should return a 403
         """
         connection = TurnRapidproConnection.objects.create(
             description="test connection",
