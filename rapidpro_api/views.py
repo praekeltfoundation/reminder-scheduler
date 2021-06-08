@@ -41,7 +41,6 @@ class ProfileSyncViewSet(GenericViewSet):
         rp_url = urljoin(
                 connection.rp_url, f"/api/v2/contacts.json?urn=whatsapp:{msisdn}")
         rp_headers = {
-            "Content-Type": "application/json",
             "Authorization": "Token {}".format(connection.rp_api_token)
         }
         if rp_field == "language":
@@ -49,7 +48,7 @@ class ProfileSyncViewSet(GenericViewSet):
         else:
             body = {"fields": {rp_field: turn_value}}
         rp_response = requests.request(
-            method="POST", url=rp_url, headers=rp_headers, data=json.dumps(body)
+            method="POST", url=rp_url, headers=rp_headers, json=body
         )
         rp_response.raise_for_status()
 
