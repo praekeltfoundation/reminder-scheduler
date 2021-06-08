@@ -1,14 +1,11 @@
-import json
-import requests
-
 from rest_framework.decorators import action
 from rest_framework.exceptions import ValidationError
 from rest_framework.response import Response
 from rest_framework.serializers import Serializer
 from rest_framework.viewsets import GenericViewSet
-from urllib.parse import urljoin
 
 from rapidpro_api.models import TurnRapidproConnection
+from rapidpro_api.tasks import sync_profile_fields
 from quickreplies.views import validate_hmac_signature
 
 
@@ -36,40 +33,6 @@ class ProfileSyncViewSet(GenericViewSet):
         except KeyError:
             raise ValidationError({"contacts":[{"wa_id": ["This field is required."]}]})
 
-        turn_value = self.get_turn_field_value(turn_field, msisdn)
-
-        rp_url = urljoin(
-                connection.rp_url, f"/api/v2/contacts.json?urn=whatsapp:{msisdn}")
-        rp_headers = {
-            "Authorization": "Token {}".format(connection.rp_api_token)
-        }
-        if rp_field == "language":
-            body = {rp_field: turn_value.lower()}
-        else:
-            body = {"fields": {rp_field: turn_value}}
-        rp_response = requests.request(
-            method="POST", url=rp_url, headers=rp_headers, json=body
-        )
-        rp_response.raise_for_status()
+        sync_profile_fields.delay(connection.pk, rp_field, turn_field, msisdn)
 
         return Response()
-
-    def get_turn_field_value(self, turn_field, msisdn):
-        connection = self.get_object()
-        turn_url = urljoin(
-            connection.turn_url, f"/v1/contacts/{msisdn}/profile")
-        turn_headers = {
-            "Accept": "application/vnd.v1+json",
-            "Authorization": "Bearer {}".format(connection.turn_api_token)
-        }
-        turn_response = requests.request(
-            method="GET", url=turn_url, headers=turn_headers
-        )
-        turn_response.raise_for_status()
-
-        turn_profile = turn_response.json()
-        try:
-            turn_value = turn_profile['fields'][turn_field]
-        except (KeyError, AttributeError):
-            raise ValidationError({'turn_field': 'Key not found in profile.'})
-        return turn_value
