@@ -11,7 +11,7 @@ from urllib.parse import urljoin
 
 from django.conf import settings
 from django.utils import timezone
-from rest_framework import authentication, permissions, status
+from rest_framework import authentication, permissions
 from rest_framework.exceptions import ValidationError
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -58,12 +58,11 @@ class ReminderCreate(APIView):
             content=content
         )
 
-        existing_reminders = ReminderSchedule.objects.filter(
+        ReminderSchedule.objects.filter(
             recipient_id=recipient_id,
             sent_time__isnull=True,
-            cancelled=False).exclude(pk=new_reminder.pk).update(
-                cancelled=True
-            )
+            cancelled=False
+        ).exclude(pk=new_reminder.pk).update(cancelled=True)
 
         return Response({"accepted": True}, status=201)
 
@@ -88,17 +87,17 @@ class GetMsisdnTimezoneTurn(APIView):
         try:
             recipient_id = request.data['contacts'][0]['wa_id']
         except KeyError:
-            raise ValidationError({"contacts":[{"wa_id": ["This field is required."]}]})
+            raise ValidationError({"contacts": [{"wa_id": ["This field is required."]}]})
 
         try:
             msisdn = phonenumbers.parse("+{}".format(recipient_id))
         except phonenumbers.phonenumberutil.NumberParseException:
             raise ValidationError(
-                {"contacts":[{"wa_id": ["This value must be a phone number with a region prefix."]}]})
+                {"contacts": [{"wa_id": ["This value must be a phone number with a region prefix."]}]})
 
         if not(phonenumbers.is_possible_number(msisdn) and phonenumbers.is_valid_number(msisdn)):
             raise ValidationError(
-                {"contacts":[{"wa_id": ["This value must be a phone number with a region prefix."]}]})
+                {"contacts": [{"wa_id": ["This value must be a phone number with a region prefix."]}]})
 
         zones = ph_timezone.time_zones_for_number(msisdn)
         if len(zones) == 1:
@@ -136,8 +135,7 @@ class GetMsisdnTimezones(APIView):
 
         zones = list(ph_timezone.time_zones_for_number(msisdn))
 
-        if (len(zones) > 1 and 
-                request.query_params.get('return_one', 'false').lower() == 'true'):
+        if (len(zones) > 1 and request.query_params.get('return_one', 'false').lower() == 'true'):
             zones = [get_middle_tz(zones)]
 
         return Response({"success": True, "timezones": zones}, status=200)

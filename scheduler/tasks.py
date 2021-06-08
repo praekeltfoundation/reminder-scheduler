@@ -15,6 +15,7 @@ from .models import ReminderSchedule
 logger = get_task_logger(__name__)
 r = redis.StrictRedis(host=settings.REDIS_HOST, port=settings.REDIS_PORT, db=settings.REDIS_DB)
 
+
 @app.task(ignore_result=True,)
 def check_for_scheduled_reminders():
     logger.info("Checking for due reminders")
@@ -49,12 +50,12 @@ def send_reminder(pk):
         logger.info("Retrieving contact info")
         s = requests.Session()
         s.headers.update({
-                "Authorization": "Bearer %s" % settings.TURN_AUTH_TOKEN,
-            })
+            "Authorization": "Bearer %s" % settings.TURN_AUTH_TOKEN,
+        })
         response = s.get(urljoin(
-                settings.TURN_URL, f"/v1/contacts/{reminder.recipient_id}/profile"),
-            headers={"Accept": "application/vnd.v1+json",}
-            )
+            settings.TURN_URL, f"/v1/contacts/{reminder.recipient_id}/profile"),
+            headers={"Accept": "application/vnd.v1+json", }
+        )
         response.raise_for_status()
 
         profile = response.json()
@@ -62,14 +63,14 @@ def send_reminder(pk):
         try:
             opted_in = profile['fields']['stress_optin'].lower()
         except (KeyError, AttributeError):
-            opted_in = "no" # Assume not opted in
+            opted_in = "no"  # Assume not opted in
         try:
             day5_complete = profile['fields']['day5_complete'].lower()
         except (KeyError, AttributeError):
-            day5_complete = "no" # Assume last module not complete
+            day5_complete = "no"  # Assume last module not complete
 
         if day5_complete.lower() == "next" or opted_in.lower() != "yes":
-            reminder.cancelled=True
+            reminder.cancelled = True
             reminder.save()
             logger.info("Cancelled reminder %d" % pk)
             return
@@ -96,5 +97,5 @@ def send_reminder(pk):
         # Expecting a 200, raise for errors.
         response.raise_for_status()
 
-        reminder.sent_time=timezone.now()
+        reminder.sent_time = timezone.now()
         reminder.save()

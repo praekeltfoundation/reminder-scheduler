@@ -7,6 +7,7 @@ class ReminderContent(models.Model):
     def __str__(self):
         return self.text
 
+
 class ReminderSchedule(models.Model):
     schedule_time = models.DateTimeField(null=False, blank=False)
     created_at = models.DateTimeField(auto_now_add=True)

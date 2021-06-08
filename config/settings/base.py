@@ -8,7 +8,6 @@ from os.path import join
 import dj_database_url
 import environ
 from celery.schedules import crontab
-from kombu import Exchange, Queue
 
 root = environ.Path(__file__) - 3
 env = environ.Env(DEBUG=(bool, False))
@@ -159,7 +158,7 @@ CELERYBEAT_SCHEDULE = {
     "reminder_check": {
         "task": 'scheduler.tasks.check_for_scheduled_reminders',
         "schedule": crontab(minute="*"),
-        "kwargs":{},
+        "kwargs": {},
     },
 }
 
