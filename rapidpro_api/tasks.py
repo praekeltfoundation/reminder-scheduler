@@ -38,7 +38,7 @@ def sync_profile_fields(connection_pk, rp_field, turn_field, msisdn):
     turn_value = get_turn_field_value(connection, turn_field, msisdn)
 
     rp_url = urljoin(
-            connection.rp_url, f"/api/v2/contacts.json?urn=whatsapp:{msisdn}")
+            connection.rp_url, f"/api/v2/contacts.json?urn=whatsapp%3A{msisdn}")
     rp_headers = {
         "Authorization": "Token {}".format(connection.rp_api_token)
     }
