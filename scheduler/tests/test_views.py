@@ -2,6 +2,8 @@ import json
 import responses
 from django.contrib.auth.models import User
 from django.test import override_settings
+from django.urls import reverse
+from rest_framework import status
 from rest_framework.test import APITestCase
 from requests.exceptions import HTTPError
 
@@ -274,3 +276,38 @@ class GetMsisdnTimezonesTest(APITestCase):
             {"success": True, "timezones": ['Australia/Eucla']}
         )
         self.assertEqual(response.status_code, 200)
+
+
+class MaintenanceErrorResponseTest(APITestCase):
+    @responses.activate
+    @override_settings(TURN_URL='https://turn_example.org')
+    def test_calls_to_maintenance_url_send_maintenance_message(self):
+        """
+        The post requests should result in the user receiving a maintenance
+        message in response
+        """
+
+        expected_data = {
+            "preview_url": False,
+            "recipient_type": "individual",
+            "to": "16505551234",
+            "type": "text",
+            "text": {"body": "placeholder text"}
+        }
+        responses.add(
+            method=responses.POST,
+            url="https://turn_example.org/v1/messages",
+            match=[responses.json_params_matcher(expected_data)]
+        )
+
+        url = reverse("maintenance-response")
+        data = {
+            "contacts": [{
+                "profile": {"name": "Example User"},
+                "wa_id": "16505551234"
+            }]
+        }
+        response = self.client.post(
+            url, data, format="json"
+        )
+        self.assertEqual(response.status_code, status.HTTP_200_OK)

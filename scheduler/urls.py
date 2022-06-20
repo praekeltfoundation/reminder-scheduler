@@ -1,5 +1,9 @@
 from django.urls import re_path
-from .views import ReminderCreate, GetMsisdnTimezoneTurn, GetMsisdnTimezones
+from .views import (
+    ReminderCreate, GetMsisdnTimezoneTurn, GetMsisdnTimezones,
+    MaintenanceErrorResponse
+)
+
 
 urlpatterns = [
     re_path(
@@ -16,5 +20,10 @@ urlpatterns = [
         r"^timezones",
         GetMsisdnTimezones.as_view(),
         name="get-timezones",
+    ),
+    re_path(
+        r"^maintenance_response",
+        MaintenanceErrorResponse.as_view(),
+        name="maintenance-response",
     ),
 ]
