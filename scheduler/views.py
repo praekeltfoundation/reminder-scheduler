@@ -141,3 +141,40 @@ class GetMsisdnTimezones(APIView):
             zones = [get_middle_tz(zones)]
 
         return Response({"success": True, "timezones": zones}, status=200)
+
+class MaintenanceErrorResponse(APIView):
+    def post(self, request, *args, **kwargs):
+        try:
+            recipient_id = request.data['contacts'][0]['wa_id']
+        except KeyError:
+            status = 400
+            message = {"contacts.0.wa_id": ["This field is required."]}
+            return Response(message, status=status)
+
+        content = ("*Maintenance update* ⚠️ \n\nWe are currently doing maintenance, "
+        "with some features and messages being temporarily unavailable.\n\n"
+        "We apologise for any inconvenience caused. Please try again later.")
+
+        data = {
+            "preview_url": False,
+            "recipient_type": "individual",
+            "to": recipient_id,
+            "type": "text",
+            "text": {"body": content}
+        }
+        headers = {
+            "Content-Type": "application/json",
+            "Accept": "application/json",
+            "Authorization": "Bearer %s" % settings.TURN_AUTH_TOKEN,
+        }
+
+        s = requests.Session()
+        response = s.post(
+            url=urljoin(settings.TURN_URL, "/v1/messages"),
+            data=json.dumps(data),
+            headers=headers,
+        )
+        # Expecting a 200, raise for errors.
+        response.raise_for_status()
+
+        return Response({"accepted": True}, status=200)
