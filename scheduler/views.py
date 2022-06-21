@@ -151,7 +151,9 @@ class MaintenanceErrorResponse(APIView):
             message = {"contacts.0.wa_id": ["This field is required."]}
             return Response(message, status=status)
 
-        content = "placeholder text"
+        content = ("*Maintenance update* ⚠️ \n\nWe are currently doing maintenance, "
+        "with some features and messages being temporarily unavailable.\n\n"
+        "We apologise for any inconvenience caused. Please try again later.")
 
         data = {
             "preview_url": False,

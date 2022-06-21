@@ -292,7 +292,11 @@ class MaintenanceErrorResponseTest(APITestCase):
             "recipient_type": "individual",
             "to": "16505551234",
             "type": "text",
-            "text": {"body": "placeholder text"}
+            "text": {"body": (
+                "*Maintenance update* ⚠️ \n\nWe are currently doing maintenance, "
+                "with some features and messages being temporarily unavailable.\n\n"
+                "We apologise for any inconvenience caused. Please try again later."
+            )}
         }
         responses.add(
             method=responses.POST,
