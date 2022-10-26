@@ -68,7 +68,7 @@ def send_reminder(pk):
         except (KeyError, AttributeError):
             day5_complete = "no" # Assume last module not complete
 
-        if day5_complete.lower() == "next" or opted_in.lower() != "yes":
+        if day5_complete.lower() == "next" or "yes" not in opted_in.lower():
             reminder.cancelled=True
             reminder.save()
             logger.info("Cancelled reminder %d" % pk)
