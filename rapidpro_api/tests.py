@@ -1,6 +1,7 @@
 import json
 
 import responses
+from responses.matchers import json_params_matcher
 from django.urls import reverse
 from rest_framework import status
 from rest_framework.test import APITestCase
@@ -34,7 +35,7 @@ class RapidproApiViewTests(APITestCase):
     @responses.activate
     def test_profileSync_language_fields(self):
         """
-        The view should retrieve the value of the Turn language field, convert to 
+        The view should retrieve the value of the Turn language field, convert to
         set the RapidPro language field to match the lowercase value
         """
         connection = TurnRapidproConnection.objects.create(
@@ -53,7 +54,7 @@ class RapidproApiViewTests(APITestCase):
         responses.add(
             method=responses.POST,
             url="https://rp_example.org/api/v2/contacts.json?urn=whatsapp:16505551234",
-            match=[responses.json_params_matcher(expected_data)]
+            match=[json_params_matcher(expected_data)]
         )
 
         url = "{}?turn_field=language&rp_field=language".format(reverse(
@@ -95,7 +96,7 @@ class RapidproApiViewTests(APITestCase):
         responses.add(
             method=responses.POST,
             url="https://rp_example.org/api/v2/contacts.json?urn=whatsapp:16505551234",
-            match=[responses.json_params_matcher(expected_data)]
+            match=[json_params_matcher(expected_data)]
         )
 
         url = "{}?turn_field={}&rp_field={}".format(reverse(
