@@ -10,9 +10,9 @@ setup(
     packages=find_packages(),
     include_package_data=True,
     install_requires=[
-        "celery==4.4.2",
+        "celery==5.2.7",
         "Django~=3.1.0",
-        "django-celery-beat==2.0.0",
+        "django-celery-beat==2.5.0",
         "django-environ>=0.4.5,<0.5",
         "djangorestframework",
         "dj-database-url",
