@@ -4,6 +4,7 @@ import json
 from hashlib import sha256
 
 import responses
+from responses.matchers import json_params_matcher
 from django.urls import reverse
 from rest_framework import status
 from rest_framework.test import APITestCase
@@ -80,7 +81,7 @@ class QuickReplyViewTests(APITestCase):
         responses.add(
             method=responses.POST,
             url="https://example.org",
-            match=[responses.json_params_matcher(expected_data)],
+            match=[json_params_matcher(expected_data)],
         )
 
         response = self.client.post(
@@ -121,7 +122,7 @@ class QuickReplyViewTests(APITestCase):
         responses.add(
             method=responses.POST,
             url="https://example.org",
-            match=[responses.json_params_matcher(data)],
+            match=[json_params_matcher(data)],
         )
 
         response = self.client.post(

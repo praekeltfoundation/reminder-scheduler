@@ -6,6 +6,7 @@ from django.urls import reverse
 from rest_framework import status
 from rest_framework.test import APITestCase
 from requests.exceptions import HTTPError
+from responses.matchers import json_params_matcher
 
 
 class GetMsisdnTimezoneTurnTest(APITestCase):
@@ -112,7 +113,7 @@ class GetMsisdnTimezoneTurnTest(APITestCase):
             'https://fake_turn.url/v1/contacts/61498765432/profile',
             body=json.dumps(
                 {"version": "0.0.1-alpha", "fields": {"timezone": "Australia/Adelaide"}}),
-            match=[responses.json_params_matcher({"timezone": "Australia/Adelaide"})])
+            match=[json_params_matcher({"timezone": "Australia/Adelaide"})])
 
         response = self.client.post(
             "/scheduler/timezone/turn?save=true",
@@ -138,7 +139,7 @@ class GetMsisdnTimezoneTurnTest(APITestCase):
             responses.PATCH,
             'https://fake_turn.url/v1/contacts/61498765432/profile',
             status=404,
-            match=[responses.json_params_matcher({"timezone": "Australia/Adelaide"})])
+            match=[json_params_matcher({"timezone": "Australia/Adelaide"})])
 
         with self.assertRaises(HTTPError):
             self.client.post(
@@ -302,7 +303,7 @@ class MaintenanceErrorResponseTest(APITestCase):
         responses.add(
             method=responses.POST,
             url="https://turn_example.org/v1/messages",
-            match=[responses.json_params_matcher(expected_data)]
+            match=[json_params_matcher(expected_data)]
         )
 
         url = reverse("maintenance-response")
