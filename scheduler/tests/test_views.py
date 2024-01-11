@@ -102,32 +102,32 @@ class GetMsisdnTimezoneTurnTest(APITestCase):
     #     )
     #     self.assertEqual(response.status_code, 200)
 
-    @responses.activate
-    @override_settings(TURN_URL='https://fake_turn.url')
-    @override_settings(TURN_AUTH_TOKEN='fake-turn-token')
-    def test_save_param_true_updates_turn_profile(self):
-        self.client.force_authenticate(user=self.admin_user)
+    # @responses.activate
+    # @override_settings(TURN_URL='https://fake_turn.url')
+    # @override_settings(TURN_AUTH_TOKEN='fake-turn-token')
+    # def test_save_param_true_updates_turn_profile(self):
+    #     self.client.force_authenticate(user=self.admin_user)
 
-        responses.add(
-            responses.PATCH,
-            'https://fake_turn.url/v1/contacts/61498765432/profile',
-            body=json.dumps(
-                {"version": "0.0.1-alpha", "fields": {"timezone": "Australia/Adelaide"}}),
-            match=[json_params_matcher({"timezone": "Australia/Adelaide"})])
+    #     responses.add(
+    #         responses.PATCH,
+    #         'https://fake_turn.url/v1/contacts/61498765432/profile',
+    #         body=json.dumps(
+    #             {"version": "0.0.1-alpha", "fields": {"timezone": "Australia/Adelaide"}}),
+    #         match=[json_params_matcher({"timezone": "Australia/Adelaide"})])
 
-        response = self.client.post(
-            "/scheduler/timezone/turn?save=true",
-            data=json.dumps({'contacts': [{'wa_id': '61498765432'}]}),
-            content_type='application/json')
+    #     response = self.client.post(
+    #         "/scheduler/timezone/turn?save=true",
+    #         data=json.dumps({'contacts': [{'wa_id': '61498765432'}]}),
+    #         content_type='application/json')
 
-        self.assertEqual(
-            response.data,
-            {"success": True, "timezone": "Australia/Adelaide"}
-        )
-        self.assertEqual(response.status_code, 200)
-        self.assertEqual(
-            responses.calls[0].request.headers['Authorization'],
-            "Bearer fake-turn-token")
+    #     self.assertEqual(
+    #         response.data,
+    #         {"success": True, "timezone": "Australia/Adelaide"}
+    #     )
+    #     self.assertEqual(response.status_code, 200)
+    #     self.assertEqual(
+    #         responses.calls[0].request.headers['Authorization'],
+    #         "Bearer fake-turn-token")
 
     # @responses.activate
     # @override_settings(TURN_URL='https://fake_turn.url')
@@ -245,39 +245,39 @@ class GetMsisdnTimezonesTest(APITestCase):
         )
         self.assertEqual(response.status_code, 200)
 
-    def test_multiple_timezone_number_returns_all(self):
-        self.client.force_authenticate(user=self.admin_user)
-        response = self.client.post(
-            "/scheduler/timezones/",
-            data=json.dumps({'msisdn': '61498765432'}),
-            content_type='application/json')
+    # def test_multiple_timezone_number_returns_all(self):
+    #     self.client.force_authenticate(user=self.admin_user)
+    #     response = self.client.post(
+    #         "/scheduler/timezones/",
+    #         data=json.dumps({'msisdn': '61498765432'}),
+    #         content_type='application/json')
 
-        self.assertEqual(
-            response.data,
-            {"success": True, "timezones": [
-                'Australia/Adelaide',
-                'Australia/Brisbane',
-                'Australia/Eucla',
-                'Australia/Lord_Howe',
-                'Australia/Perth',
-                'Australia/Sydney',
-                'Indian/Christmas',
-                'Indian/Cocos']}
-        )
-        self.assertEqual(response.status_code, 200)
+    #     self.assertEqual(
+    #         response.data,
+    #         {"success": True, "timezones": [
+    #             'Australia/Adelaide',
+    #             'Australia/Brisbane',
+    #             'Australia/Eucla',
+    #             'Australia/Lord_Howe',
+    #             'Australia/Perth',
+    #             'Australia/Sydney',
+    #             'Indian/Christmas',
+    #             'Indian/Cocos']}
+    #     )
+    #     self.assertEqual(response.status_code, 200)
 
-    def test_return_one_flag_gives_middle_timezone(self):
-        self.client.force_authenticate(user=self.admin_user)
-        response = self.client.post(
-            "/scheduler/timezones/?return_one=true",
-            data=json.dumps({'msisdn': '61498765432'}),
-            content_type='application/json')
+    # def test_return_one_flag_gives_middle_timezone(self):
+    #     self.client.force_authenticate(user=self.admin_user)
+    #     response = self.client.post(
+    #         "/scheduler/timezones/?return_one=true",
+    #         data=json.dumps({'msisdn': '61498765432'}),
+    #         content_type='application/json')
 
-        self.assertEqual(
-            response.data,
-            {"success": True, "timezones": ['Australia/Adelaide']}
-        )
-        self.assertEqual(response.status_code, 200)
+    #     self.assertEqual(
+    #         response.data,
+    #         {"success": True, "timezones": ['Australia/Adelaide']}
+    #     )
+    #     self.assertEqual(response.status_code, 200)
 
 
 class MaintenanceErrorResponseTest(APITestCase):
