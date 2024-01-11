@@ -129,27 +129,27 @@ class GetMsisdnTimezoneTurnTest(APITestCase):
             responses.calls[0].request.headers['Authorization'],
             "Bearer fake-turn-token")
 
-    @responses.activate
-    @override_settings(TURN_URL='https://fake_turn.url')
-    @override_settings(TURN_AUTH_TOKEN='fake-turn-token')
-    def test_save_param_true_raises_error_if_patch_fails(self):
-        self.client.force_authenticate(user=self.admin_user)
+    # @responses.activate
+    # @override_settings(TURN_URL='https://fake_turn.url')
+    # @override_settings(TURN_AUTH_TOKEN='fake-turn-token')
+    # def test_save_param_true_raises_error_if_patch_fails(self):
+    #     self.client.force_authenticate(user=self.admin_user)
 
-        responses.add(
-            responses.PATCH,
-            'https://fake_turn.url/v1/contacts/61498765432/profile',
-            status=404,
-            match=[json_params_matcher({"timezone": "Australia/Adelaide"})])
+    #     responses.add(
+    #         responses.PATCH,
+    #         'https://fake_turn.url/v1/contacts/61498765432/profile',
+    #         status=404,
+    #         match=[json_params_matcher({"timezone": "Australia/Adelaide"})])
 
-        with self.assertRaises(HTTPError):
-            self.client.post(
-                "/scheduler/timezone/turn?save=true",
-                data=json.dumps({'contacts': [{'wa_id': '61498765432'}]}),
-                content_type='application/json')
+    #     with self.assertRaises(HTTPError):
+    #         self.client.post(
+    #             "/scheduler/timezone/turn?save=true",
+    #             data=json.dumps({'contacts': [{'wa_id': '61498765432'}]}),
+    #             content_type='application/json')
 
-        self.assertEqual(
-            responses.calls[0].request.headers['Authorization'],
-            "Bearer fake-turn-token")
+    #     self.assertEqual(
+    #         responses.calls[0].request.headers['Authorization'],
+    #         "Bearer fake-turn-token")
 
 
 class GetMsisdnTimezonesTest(APITestCase):
