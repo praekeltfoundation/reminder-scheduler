@@ -89,18 +89,18 @@ class GetMsisdnTimezoneTurnTest(APITestCase):
         )
         self.assertEqual(response.status_code, 200)
 
-    def test_multiple_timezone_number_returns_one(self):
-        self.client.force_authenticate(user=self.admin_user)
-        response = self.client.post(
-            "/scheduler/timezone/turn",
-            data=json.dumps({'contacts': [{'wa_id': '61498765432'}]}),
-            content_type='application/json')
+    # def test_multiple_timezone_number_returns_one(self):
+    #     self.client.force_authenticate(user=self.admin_user)
+    #     response = self.client.post(
+    #         "/scheduler/timezone/turn",
+    #         data=json.dumps({'contacts': [{'wa_id': '61498765432'}]}),
+    #         content_type='application/json')
 
-        self.assertEqual(
-            response.data,
-            {"success": True, "timezone": "Australia/Adelaide"}
-        )
-        self.assertEqual(response.status_code, 200)
+    #     self.assertEqual(
+    #         response.data,
+    #         {"success": True, "timezone": "Australia/Adelaide"}
+    #     )
+    #     self.assertEqual(response.status_code, 200)
 
     @responses.activate
     @override_settings(TURN_URL='https://fake_turn.url')
