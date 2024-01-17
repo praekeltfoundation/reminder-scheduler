@@ -1,8 +1,10 @@
 import json
 import responses
+from datetime import datetime
 from django.contrib.auth.models import User
 from django.test import override_settings
 from django.urls import reverse
+from unittest.mock import patch
 from rest_framework import status
 from rest_framework.test import APITestCase
 from requests.exceptions import HTTPError
@@ -91,10 +93,13 @@ class GetMsisdnTimezoneTurnTest(APITestCase):
 
     def test_multiple_timezone_number_returns_one(self):
         self.client.force_authenticate(user=self.admin_user)
-        response = self.client.post(
-            "/scheduler/timezone/turn",
-            data=json.dumps({'contacts': [{'wa_id': '61498765432'}]}),
-            content_type='application/json')
+
+        with patch('scheduler.views.datetime') as mock_datetime:
+            mock_datetime.utcnow.return_value = datetime(2022, 8, 8)
+            response = self.client.post(
+                "/scheduler/timezone/turn",
+                data=json.dumps({'contacts': [{'wa_id': '61498765432'}]}),
+                content_type='application/json')
 
         self.assertEqual(
             response.data,
@@ -115,10 +120,12 @@ class GetMsisdnTimezoneTurnTest(APITestCase):
                 {"version": "0.0.1-alpha", "fields": {"timezone": "Australia/Adelaide"}}),
             match=[json_params_matcher({"timezone": "Australia/Adelaide"})])
 
-        response = self.client.post(
-            "/scheduler/timezone/turn?save=true",
-            data=json.dumps({'contacts': [{'wa_id': '61498765432'}]}),
-            content_type='application/json')
+        with patch('scheduler.views.datetime') as mock_datetime:
+            mock_datetime.utcnow.return_value = datetime(2022, 8, 8)
+            response = self.client.post(
+                "/scheduler/timezone/turn?save=true",
+                data=json.dumps({'contacts': [{'wa_id': '61498765432'}]}),
+                content_type='application/json')
 
         self.assertEqual(
             response.data,
@@ -142,10 +149,12 @@ class GetMsisdnTimezoneTurnTest(APITestCase):
             match=[json_params_matcher({"timezone": "Australia/Adelaide"})])
 
         with self.assertRaises(HTTPError):
-            self.client.post(
-                "/scheduler/timezone/turn?save=true",
-                data=json.dumps({'contacts': [{'wa_id': '61498765432'}]}),
-                content_type='application/json')
+            with patch('scheduler.views.datetime') as mock_datetime:
+                mock_datetime.utcnow.return_value = datetime(2022, 8, 8)
+                self.client.post(
+                    "/scheduler/timezone/turn?save=true",
+                    data=json.dumps({'contacts': [{'wa_id': '61498765432'}]}),
+                    content_type='application/json')
 
         self.assertEqual(
             responses.calls[0].request.headers['Authorization'],
@@ -268,10 +277,13 @@ class GetMsisdnTimezonesTest(APITestCase):
 
     def test_return_one_flag_gives_middle_timezone(self):
         self.client.force_authenticate(user=self.admin_user)
-        response = self.client.post(
-            "/scheduler/timezones/?return_one=true",
-            data=json.dumps({'msisdn': '61498765432'}),
-            content_type='application/json')
+
+        with patch('scheduler.views.datetime') as mock_datetime:
+            mock_datetime.utcnow.return_value = datetime(2022, 8, 8)
+            response = self.client.post(
+                "/scheduler/timezones/?return_one=true",
+                data=json.dumps({'msisdn': '61498765432'}),
+                content_type='application/json')
 
         self.assertEqual(
             response.data,
