@@ -18,6 +18,7 @@ jobs:
           wget --quiet -O - https://www.postgresql.org/media/keys/ACCC4CF8.asc 2>/dev/null | sudo apt-key add -
           sudo apt-get update
           sudo apt-get -y install postgresql-14
+          sudo apt-get -y install postgresql-16
           pip install -r requirements.txt -r requirements-dev.txt
       - name: Run tests
         run: pytest
