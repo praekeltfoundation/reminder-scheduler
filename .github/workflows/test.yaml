@@ -6,6 +6,20 @@ on:
 jobs:
   test:
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+         postgres_version: ['14','16']
+    services:
+      postgres:
+        image: postgres:${{ matrix.postgres_version }}
+        env:
+          POSTGRES_DB: reminder_scheduler
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+        ports:
+          - 5432:5432
+    env:
+      RP_SIDEKICK_DATABASE: postgres://postgres:postgres@localhost/reminder_scheduler
     steps:
       - uses: actions/checkout@v3
       - uses: actions/setup-python@v5.0.0
