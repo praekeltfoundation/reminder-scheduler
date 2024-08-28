@@ -6,6 +6,20 @@ on:
 jobs:
   test:
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+         postgres_version: ['14','16']
+    services:
+      postgres:
+        image: postgres:${{ matrix.postgres_version }}
+        env:
+          POSTGRES_DB: reminder_scheduler
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+        ports:
+          - 5432:5432
+    env:
+      DATABASE_URL: postgres://postgres:postgres@localhost/reminder_scheduler
     steps:
       - uses: actions/checkout@v3
       - uses: actions/setup-python@v5.0.0
@@ -13,11 +27,8 @@ jobs:
           python-version: '3.9'
           cache: 'pip'
       - name: Install dependancies
-        run: |
-          sudo sh -c 'echo "deb http://apt.postgresql.org/pub/repos/apt $(lsb_release -cs)-pgdg main" > /etc/apt/sources.list.d/pgdg.list'
-          wget --quiet -O - https://www.postgresql.org/media/keys/ACCC4CF8.asc 2>/dev/null | sudo apt-key add -
-          sudo apt-get update
-          sudo apt-get -y install postgresql-14
-          pip install -r requirements.txt -r requirements-dev.txt
+        run: pip install -r requirements.txt -r requirements-dev.txt
       - name: Run tests
-        run: pytest
+        run: |
+          python manage.py makemigrations --check
+          pytest
