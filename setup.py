@@ -16,7 +16,7 @@ setup(
         "django-environ>=0.4.5,<0.5",
         "djangorestframework",
         "dj-database-url",
-        "psycopg2==2.8.4",
+        "psycopg2-binary",
         "sentry-sdk==1.14.0",
         "redis==4.4.4",
         "requests>=2.24.0",
