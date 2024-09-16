@@ -55,3 +55,10 @@ See our `ways of working`_ for a guide on how to contribute to ``reminder-schedu
 .. _black: https://github.com/ambv/black
 .. _ways of working: ./docs/ways-of-working.md
 
+------------
+Deprecation
+------------
+
+The following endpoints of ``reminder-scheduler`` will be deprecated:
+- scheduler/
+- ''

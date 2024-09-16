@@ -24,6 +24,7 @@ class GetMsisdnTimezoneTurnTest(APITestCase):
 
         self.assertEqual(response.status_code, 401)
 
+
     def test_unexpected_data_format_returns_400(self):
         self.client.force_authenticate(user=self.admin_user)
         response = self.client.post(
