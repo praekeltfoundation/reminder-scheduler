@@ -1,4 +1,4 @@
-FROM praekeltfoundation/django-bootstrap:py3.6
+FROM ghcr.io/praekeltfoundation/docker-django-bootstrap-nw:py3.9
 
 COPY ./requirements.txt /app/
 COPY ./setup.py /app/
