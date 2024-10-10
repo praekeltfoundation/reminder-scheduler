@@ -21,14 +21,27 @@ jobs:
     env:
       DATABASE_URL: postgres://postgres:postgres@localhost/reminder_scheduler
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - uses: actions/setup-python@v5.0.0
         with:
           python-version: '3.9'
-          cache: 'pip'
-      - name: Install dependancies
-        run: pip install -r requirements.txt -r requirements-dev.txt
-      - name: Run tests
+      - uses: abatilo/actions-poetry@v2.0.0
+        with:
+          poetry-version: "1.8.3"    
+      - name: Install dependencies
+        id: install-deps
         run: |
-          python manage.py makemigrations --check
-          pytest
+          poetry install
+      - name: Check formatting
+        # Lints/tests should always run, even if other lints/tests have failed.
+        if: success() || failure() && steps.install-deps.outcome == 'success'
+        run: |
+          poetry run ruff format --check 
+      - name: Lint
+        if: success() || failure() && steps.install-deps.outcome == 'success'
+        run: |
+          poetry run ruff check 
+      - name: Run tests
+        if: success() || failure() && steps.install-deps.outcome == 'success'
+        run: |
+          poetry run pytest -vv
