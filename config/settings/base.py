@@ -8,7 +8,6 @@ from os.path import join
 import dj_database_url
 import environ
 from celery.schedules import crontab
-from kombu import Exchange, Queue
 
 root = environ.Path(__file__) - 3
 env = environ.Env(DEBUG=(bool, False))
@@ -85,7 +84,7 @@ WSGI_APPLICATION = "config.wsgi.application"
 
 DATABASES = {
     "default": dj_database_url.config(
-        default="sqlite:///%s" % (join(BASE_DIR, "db.sqlite3"),)
+        default="sqlite:///{}".format(join(BASE_DIR, "db.sqlite3"))
     )
 }
 
@@ -133,8 +132,8 @@ COMPRESS_ENABLED = True
 SENTRY_DSN = env.str("SENTRY_DSN", "")
 
 REST_FRAMEWORK = {
-    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
-    'PAGE_SIZE': 10
+    "DEFAULT_PAGINATION_CLASS": "rest_framework.pagination.PageNumberPagination",
+    "PAGE_SIZE": 10,
 }
 
 # Celery configuration options
@@ -152,15 +151,15 @@ REDIS_URL = f"redis://{REDIS_HOST}:{REDIS_PORT}/{REDIS_DB}"
 
 CELERY_ALWAYS_EAGER = False
 
-CELERY_TASK_SERIALIZER = 'json'
-CELERY_RESULT_SERIALIZER = 'json'
-CELERY_ACCEPT_CONTENT = ['json']
+CELERY_TASK_SERIALIZER = "json"
+CELERY_RESULT_SERIALIZER = "json"
+CELERY_ACCEPT_CONTENT = ["json"]
 
 CELERYBEAT_SCHEDULE = {
     "reminder_check": {
-        "task": 'scheduler.tasks.check_for_scheduled_reminders',
+        "task": "scheduler.tasks.check_for_scheduled_reminders",
         "schedule": crontab(minute="*"),
-        "kwargs":{},
+        "kwargs": {},
     },
 }
 

@@ -1,40 +1,40 @@
 import json
-import responses
 from datetime import datetime
+from unittest.mock import patch
+
+import responses
 from django.contrib.auth.models import User
 from django.test import override_settings
 from django.urls import reverse
-from unittest.mock import patch
-from rest_framework import status
-from rest_framework.test import APITestCase
 from requests.exceptions import HTTPError
 from responses.matchers import json_params_matcher
+from rest_framework import status
+from rest_framework.test import APITestCase
 
 
 class GetMsisdnTimezoneTurnTest(APITestCase):
     def setUp(self):
-        self.admin_user = User.objects.create_superuser(
-            'adminuser', "admin_password")
+        self.admin_user = User.objects.create_superuser("adminuser", "admin_password")
 
     def test_login_required_to_get_timezones(self):
         response = self.client.post(
             "/scheduler/timezone/turn",
-            json={'contacts': [{'msisdn': 'something'}]},
-            content_type='application/json')
+            json={"contacts": [{"msisdn": "something"}]},
+            content_type="application/json",
+        )
 
         self.assertEqual(response.status_code, 401)
-
 
     def test_unexpected_data_format_returns_400(self):
         self.client.force_authenticate(user=self.admin_user)
         response = self.client.post(
             "/scheduler/timezone/turn",
-            data=json.dumps({'contacts': [{'msisdn': 'something'}]}),
-            content_type='application/json')
+            data=json.dumps({"contacts": [{"msisdn": "something"}]}),
+            content_type="application/json",
+        )
 
         self.assertEqual(
-            response.data["contacts"][0]["wa_id"][0],
-            "This field is required."
+            response.data["contacts"][0]["wa_id"][0], "This field is required."
         )
         self.assertEqual(response.status_code, 400)
 
@@ -42,12 +42,13 @@ class GetMsisdnTimezoneTurnTest(APITestCase):
         self.client.force_authenticate(user=self.admin_user)
         response = self.client.post(
             "/scheduler/timezone/turn",
-            data=json.dumps({'contacts': [{'wa_id': 'something'}]}),
-            content_type='application/json')
+            data=json.dumps({"contacts": [{"wa_id": "something"}]}),
+            content_type="application/json",
+        )
 
         self.assertEqual(
             response.data["contacts"][0]["wa_id"][0],
-            'This value must be a phone number with a region prefix.'
+            "This value must be a phone number with a region prefix.",
         )
         self.assertEqual(response.status_code, 400)
 
@@ -56,12 +57,13 @@ class GetMsisdnTimezoneTurnTest(APITestCase):
         self.client.force_authenticate(user=self.admin_user)
         response = self.client.post(
             "/scheduler/timezone/turn",
-            data=json.dumps({'contacts': [{'wa_id': '120012301'}]}),
-            content_type='application/json')
+            data=json.dumps({"contacts": [{"wa_id": "120012301"}]}),
+            content_type="application/json",
+        )
 
         self.assertEqual(
             response.data["contacts"][0]["wa_id"][0],
-            'This value must be a phone number with a region prefix.'
+            "This value must be a phone number with a region prefix.",
         )
         self.assertEqual(response.status_code, 400)
 
@@ -70,12 +72,13 @@ class GetMsisdnTimezoneTurnTest(APITestCase):
         self.client.force_authenticate(user=self.admin_user)
         response = self.client.post(
             "/scheduler/timezone/turn",
-            data=json.dumps({'contacts': [{'wa_id': '12001230101'}]}),
-            content_type='application/json')
+            data=json.dumps({"contacts": [{"wa_id": "12001230101"}]}),
+            content_type="application/json",
+        )
 
         self.assertEqual(
             response.data["contacts"][0]["wa_id"][0],
-            'This value must be a phone number with a region prefix.'
+            "This value must be a phone number with a region prefix.",
         )
         self.assertEqual(response.status_code, 400)
 
@@ -83,95 +86,102 @@ class GetMsisdnTimezoneTurnTest(APITestCase):
         self.client.force_authenticate(user=self.admin_user)
         response = self.client.post(
             "/scheduler/timezone/turn",
-            data=json.dumps({'contacts': [{'wa_id': '27345678910'}]}),
-            content_type='application/json')
+            data=json.dumps({"contacts": [{"wa_id": "27345678910"}]}),
+            content_type="application/json",
+        )
 
         self.assertEqual(
-            response.data,
-            {"success": True, "timezone": "Africa/Johannesburg"}
+            response.data, {"success": True, "timezone": "Africa/Johannesburg"}
         )
         self.assertEqual(response.status_code, 200)
 
     def test_multiple_timezone_number_returns_one(self):
         self.client.force_authenticate(user=self.admin_user)
 
-        with patch('scheduler.views.datetime') as mock_datetime:
+        with patch("scheduler.views.datetime") as mock_datetime:
             mock_datetime.utcnow.return_value = datetime(2022, 8, 8)
             response = self.client.post(
                 "/scheduler/timezone/turn",
-                data=json.dumps({'contacts': [{'wa_id': '61498765432'}]}),
-                content_type='application/json')
+                data=json.dumps({"contacts": [{"wa_id": "61498765432"}]}),
+                content_type="application/json",
+            )
 
         self.assertEqual(
-            response.data,
-            {"success": True, "timezone": "Australia/Adelaide"}
+            response.data, {"success": True, "timezone": "Australia/Adelaide"}
         )
         self.assertEqual(response.status_code, 200)
 
     @responses.activate
-    @override_settings(TURN_URL='https://fake_turn.url')
-    @override_settings(TURN_AUTH_TOKEN='fake-turn-token')
+    @override_settings(TURN_URL="https://fake_turn.url")
+    @override_settings(TURN_AUTH_TOKEN="fake-turn-token")
     def test_save_param_true_updates_turn_profile(self):
         self.client.force_authenticate(user=self.admin_user)
 
         responses.add(
             responses.PATCH,
-            'https://fake_turn.url/v1/contacts/61498765432/profile',
+            "https://fake_turn.url/v1/contacts/61498765432/profile",
             body=json.dumps(
-                {"version": "0.0.1-alpha", "fields": {"timezone": "Australia/Adelaide"}}),
-            match=[json_params_matcher({"timezone": "Australia/Adelaide"})])
+                {"version": "0.0.1-alpha", "fields": {"timezone": "Australia/Adelaide"}}
+            ),
+            match=[json_params_matcher({"timezone": "Australia/Adelaide"})],
+        )
 
-        with patch('scheduler.views.datetime') as mock_datetime:
+        with patch("scheduler.views.datetime") as mock_datetime:
             mock_datetime.utcnow.return_value = datetime(2022, 8, 8)
             response = self.client.post(
                 "/scheduler/timezone/turn?save=true",
-                data=json.dumps({'contacts': [{'wa_id': '61498765432'}]}),
-                content_type='application/json')
+                data=json.dumps({"contacts": [{"wa_id": "61498765432"}]}),
+                content_type="application/json",
+            )
 
         self.assertEqual(
-            response.data,
-            {"success": True, "timezone": "Australia/Adelaide"}
+            response.data, {"success": True, "timezone": "Australia/Adelaide"}
         )
         self.assertEqual(response.status_code, 200)
         self.assertEqual(
-            responses.calls[0].request.headers['Authorization'],
-            "Bearer fake-turn-token")
+            responses.calls[0].request.headers["Authorization"],
+            "Bearer fake-turn-token",
+        )
 
     @responses.activate
-    @override_settings(TURN_URL='https://fake_turn.url')
-    @override_settings(TURN_AUTH_TOKEN='fake-turn-token')
+    @override_settings(TURN_URL="https://fake_turn.url")
+    @override_settings(TURN_AUTH_TOKEN="fake-turn-token")
     def test_save_param_true_raises_error_if_patch_fails(self):
         self.client.force_authenticate(user=self.admin_user)
 
         responses.add(
             responses.PATCH,
-            'https://fake_turn.url/v1/contacts/61498765432/profile',
+            "https://fake_turn.url/v1/contacts/61498765432/profile",
             status=404,
-            match=[json_params_matcher({"timezone": "Australia/Adelaide"})])
+            match=[json_params_matcher({"timezone": "Australia/Adelaide"})],
+        )
 
-        with self.assertRaises(HTTPError):
-            with patch('scheduler.views.datetime') as mock_datetime:
-                mock_datetime.utcnow.return_value = datetime(2022, 8, 8)
-                self.client.post(
-                    "/scheduler/timezone/turn?save=true",
-                    data=json.dumps({'contacts': [{'wa_id': '61498765432'}]}),
-                    content_type='application/json')
+        with self.assertRaises(HTTPError), patch(
+            "scheduler.views.datetime"
+        ) as mock_datetime:
+            mock_datetime.utcnow.return_value = datetime(2022, 8, 8)
+            self.client.post(
+                "/scheduler/timezone/turn?save=true",
+                data=json.dumps({"contacts": [{"wa_id": "61498765432"}]}),
+                content_type="application/json",
+            )
 
         self.assertEqual(
-            responses.calls[0].request.headers['Authorization'],
-            "Bearer fake-turn-token")
+            responses.calls[0].request.headers["Authorization"],
+            "Bearer fake-turn-token",
+        )
 
 
 class GetMsisdnTimezonesTest(APITestCase):
     def setUp(self):
-        self.admin_user = User.objects.create_superuser(
-            'adminuser', "admin_password")
+        self.admin_user = User.objects.create_superuser("adminuser", "admin_password")
 
     def test_auth_required_to_get_timezones(self):
         response = self.client.post(
             "/scheduler/timezone/turn",
-            data={'contacts': [{'msisdn': 'something'}]},
-            content_type='application/json')
+            data={"contacts": [{"msisdn": "something"}]},
+            content_type="application/json",
+        )
 
         self.assertEqual(response.status_code, 401)
 
@@ -179,25 +189,24 @@ class GetMsisdnTimezonesTest(APITestCase):
         self.client.force_authenticate(user=self.admin_user)
         response = self.client.post(
             "/scheduler/timezones/",
-            data=json.dumps({'contact': {'urn': 'something'}}),
-            content_type='application/json')
-
-        self.assertEqual(
-            response.data,
-            {"msisdn": ["This field is required."]}
+            data=json.dumps({"contact": {"urn": "something"}}),
+            content_type="application/json",
         )
+
+        self.assertEqual(response.data, {"msisdn": ["This field is required."]})
         self.assertEqual(response.status_code, 400)
 
     def test_phonenumber_unparseable_returns_400(self):
         self.client.force_authenticate(user=self.admin_user)
         response = self.client.post(
             "/scheduler/timezones/",
-            data=json.dumps({'msisdn': 'something'}),
-            content_type='application/json')
+            data=json.dumps({"msisdn": "something"}),
+            content_type="application/json",
+        )
 
         self.assertEqual(
             response.data,
-            {"msisdn": ['This value must be a phone number with a region prefix.']}
+            {"msisdn": ["This value must be a phone number with a region prefix."]},
         )
         self.assertEqual(response.status_code, 400)
 
@@ -206,12 +215,13 @@ class GetMsisdnTimezonesTest(APITestCase):
         self.client.force_authenticate(user=self.admin_user)
         response = self.client.post(
             "/scheduler/timezones/",
-            data=json.dumps({'msisdn': '120012301'}),
-            content_type='application/json')
+            data=json.dumps({"msisdn": "120012301"}),
+            content_type="application/json",
+        )
 
         self.assertEqual(
             response.data,
-            {"msisdn": ['This value must be a phone number with a region prefix.']}
+            {"msisdn": ["This value must be a phone number with a region prefix."]},
         )
         self.assertEqual(response.status_code, 400)
 
@@ -220,12 +230,13 @@ class GetMsisdnTimezonesTest(APITestCase):
         self.client.force_authenticate(user=self.admin_user)
         response = self.client.post(
             "/scheduler/timezones/",
-            data=json.dumps({'msisdn': '12001230101'}),
-            content_type='application/json')
+            data=json.dumps({"msisdn": "12001230101"}),
+            content_type="application/json",
+        )
 
         self.assertEqual(
             response.data,
-            {"msisdn": ['This value must be a phone number with a region prefix.']}
+            {"msisdn": ["This value must be a phone number with a region prefix."]},
         )
         self.assertEqual(response.status_code, 400)
 
@@ -233,12 +244,12 @@ class GetMsisdnTimezonesTest(APITestCase):
         self.client.force_authenticate(user=self.admin_user)
         response = self.client.post(
             "/scheduler/timezones/",
-            data=json.dumps({'msisdn': '+27345678910'}),
-            content_type='application/json')
+            data=json.dumps({"msisdn": "+27345678910"}),
+            content_type="application/json",
+        )
 
         self.assertEqual(
-            response.data,
-            {"success": True, "timezones": ["Africa/Johannesburg"]}
+            response.data, {"success": True, "timezones": ["Africa/Johannesburg"]}
         )
         self.assertEqual(response.status_code, 200)
 
@@ -246,12 +257,12 @@ class GetMsisdnTimezonesTest(APITestCase):
         self.client.force_authenticate(user=self.admin_user)
         response = self.client.post(
             "/scheduler/timezones/",
-            data=json.dumps({'msisdn': '27345678910'}),
-            content_type='application/json')
+            data=json.dumps({"msisdn": "27345678910"}),
+            content_type="application/json",
+        )
 
         self.assertEqual(
-            response.data,
-            {"success": True, "timezones": ["Africa/Johannesburg"]}
+            response.data, {"success": True, "timezones": ["Africa/Johannesburg"]}
         )
         self.assertEqual(response.status_code, 200)
 
@@ -259,43 +270,48 @@ class GetMsisdnTimezonesTest(APITestCase):
         self.client.force_authenticate(user=self.admin_user)
         response = self.client.post(
             "/scheduler/timezones/",
-            data=json.dumps({'msisdn': '61498765432'}),
-            content_type='application/json')
+            data=json.dumps({"msisdn": "61498765432"}),
+            content_type="application/json",
+        )
 
         self.assertEqual(
             response.data,
-            {"success": True, "timezones": [
-                'Australia/Adelaide',
-                'Australia/Brisbane',
-                'Australia/Eucla',
-                'Australia/Lord_Howe',
-                'Australia/Perth',
-                'Australia/Sydney',
-                'Indian/Christmas',
-                'Indian/Cocos']}
+            {
+                "success": True,
+                "timezones": [
+                    "Australia/Adelaide",
+                    "Australia/Brisbane",
+                    "Australia/Eucla",
+                    "Australia/Lord_Howe",
+                    "Australia/Perth",
+                    "Australia/Sydney",
+                    "Indian/Christmas",
+                    "Indian/Cocos",
+                ],
+            },
         )
         self.assertEqual(response.status_code, 200)
 
     def test_return_one_flag_gives_middle_timezone(self):
         self.client.force_authenticate(user=self.admin_user)
 
-        with patch('scheduler.views.datetime') as mock_datetime:
+        with patch("scheduler.views.datetime") as mock_datetime:
             mock_datetime.utcnow.return_value = datetime(2022, 8, 8)
             response = self.client.post(
                 "/scheduler/timezones/?return_one=true",
-                data=json.dumps({'msisdn': '61498765432'}),
-                content_type='application/json')
+                data=json.dumps({"msisdn": "61498765432"}),
+                content_type="application/json",
+            )
 
         self.assertEqual(
-            response.data,
-            {"success": True, "timezones": ['Australia/Adelaide']}
+            response.data, {"success": True, "timezones": ["Australia/Adelaide"]}
         )
         self.assertEqual(response.status_code, 200)
 
 
 class MaintenanceErrorResponseTest(APITestCase):
     @responses.activate
-    @override_settings(TURN_URL='https://turn_example.org')
+    @override_settings(TURN_URL="https://turn_example.org")
     def test_calls_to_maintenance_url_send_maintenance_message(self):
         """
         The post requests should result in the user receiving a maintenance
@@ -307,26 +323,23 @@ class MaintenanceErrorResponseTest(APITestCase):
             "recipient_type": "individual",
             "to": "16505551234",
             "type": "text",
-            "text": {"body": (
-                "*Maintenance update* ⚠️ \n\nWe are currently doing maintenance, "
-                "with some features and messages being temporarily unavailable.\n\n"
-                "We apologise for any inconvenience caused. Please try again later."
-            )}
+            "text": {
+                "body": (
+                    "*Maintenance update* ⚠️ \n\nWe are currently doing maintenance, "
+                    "with some features and messages being temporarily unavailable.\n\n"
+                    "We apologise for any inconvenience caused. Please try again later."
+                )
+            },
         }
         responses.add(
             method=responses.POST,
             url="https://turn_example.org/v1/messages",
-            match=[json_params_matcher(expected_data)]
+            match=[json_params_matcher(expected_data)],
         )
 
         url = reverse("maintenance-response")
         data = {
-            "contacts": [{
-                "profile": {"name": "Example User"},
-                "wa_id": "16505551234"
-            }]
+            "contacts": [{"profile": {"name": "Example User"}, "wa_id": "16505551234"}]
         }
-        response = self.client.post(
-            url, data, format="json"
-        )
+        response = self.client.post(url, data, format="json")
         self.assertEqual(response.status_code, status.HTTP_200_OK)

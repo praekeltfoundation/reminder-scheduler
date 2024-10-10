@@ -4,9 +4,9 @@ from rest_framework.response import Response
 from rest_framework.serializers import Serializer
 from rest_framework.viewsets import GenericViewSet
 
+from quickreplies.views import validate_hmac_signature
 from rapidpro_api.models import TurnRapidproConnection
 from rapidpro_api.tasks import sync_profile_fields
-from quickreplies.views import validate_hmac_signature
 
 
 class ProfileSyncViewSet(GenericViewSet):
@@ -22,16 +22,18 @@ class ProfileSyncViewSet(GenericViewSet):
             request.body,
         )
 
-        rp_field = self.request.query_params.get('rp_field')
+        rp_field = self.request.query_params.get("rp_field")
         if not rp_field:
-            raise ValidationError({'rp_field': 'This query parameter is required.'})
-        turn_field = self.request.query_params.get('turn_field')
+            raise ValidationError({"rp_field": "This query parameter is required."})
+        turn_field = self.request.query_params.get("turn_field")
         if not turn_field:
-            raise ValidationError({'turn_field': 'This query parameter is required.'})
+            raise ValidationError({"turn_field": "This query parameter is required."})
         try:
-            msisdn = request.data['contacts'][0]['wa_id']
-        except KeyError:
-            raise ValidationError({"contacts":[{"wa_id": ["This field is required."]}]})
+            msisdn = request.data["contacts"][0]["wa_id"]
+        except KeyError as e:
+            raise ValidationError(
+                {"contacts": [{"wa_id": ["This field is required."]}]}
+            ) from e
 
         sync_profile_fields.delay(connection.pk, rp_field, turn_field, msisdn)
 
