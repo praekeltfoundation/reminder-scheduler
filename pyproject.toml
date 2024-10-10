@@ -81,7 +81,6 @@ ignore = [
     "UP031", # TODO: Use format specifiers instead of percent format
     "PTH100", # TODO: `os.path.abspath()` should be replaced by `Path.resolve()`
     "PTH120", # TODO: `os.path.dirname()` should be replaced by `Path.parent`
-    "UP010", # TODO: Unnecessary `__future__` import `absolute_import` for target Python version
 ]
 
 [tool.ruff.lint.per-file-ignores]
