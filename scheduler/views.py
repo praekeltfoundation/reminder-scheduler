@@ -56,7 +56,7 @@ class ReminderCreate(APIView):
             schedule_time=scheduled_for, recipient_id=recipient_id, content=content
         )
 
-        existing_reminders = (
+        (
             ReminderSchedule.objects.filter(
                 recipient_id=recipient_id, sent_time__isnull=True, cancelled=False
             )

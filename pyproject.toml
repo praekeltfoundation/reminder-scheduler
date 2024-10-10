@@ -75,7 +75,6 @@ ignore = [
     "W291", # TODO: Use format specifiers instead of percent format
     "B904", # TODO: Within an `except` clause, raise exceptions with `raise ... from err` or `raise ... from None`
     "UP032", # TODO: Use f-string instead of `format` call
-    "F841", # TODO: Local variable is assigned to but never used
 
 ]
 
