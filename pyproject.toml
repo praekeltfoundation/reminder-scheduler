@@ -77,7 +77,6 @@ ignore = [
     "UP032", # TODO: Use f-string instead of `format` call
     "F841", # TODO: Local variable is assigned to but never used
     "F401", # TODO: module imported but unused
-    "I001", # TODO: Import block is un-sorted or un-formatted
 
 ]
 

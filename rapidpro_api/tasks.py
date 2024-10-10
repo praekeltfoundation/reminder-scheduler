@@ -1,10 +1,10 @@
+from urllib.parse import urljoin
+
 import requests
 from celery.exceptions import SoftTimeLimitExceeded
 from requests.exceptions import RequestException
-from urllib.parse import urljoin
 
 from config.celery import app
-
 from rapidpro_api.models import TurnRapidproConnection
 
 

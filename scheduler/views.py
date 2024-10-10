@@ -1,22 +1,21 @@
 import json
 import logging
+from datetime import datetime, timedelta
+from math import floor
+from urllib.parse import urljoin
+
 import phonenumbers
 import pytz
 import requests
-
-from datetime import timedelta, datetime
-from math import floor
-from phonenumbers import timezone as ph_timezone
-from urllib.parse import urljoin
-
 from django.conf import settings
 from django.utils import timezone
+from phonenumbers import timezone as ph_timezone
 from rest_framework import authentication, permissions, status
 from rest_framework.exceptions import ValidationError
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from .models import ReminderSchedule, ReminderContent
+from .models import ReminderContent, ReminderSchedule
 
 LOGGER = logging.getLogger(__name__)
 

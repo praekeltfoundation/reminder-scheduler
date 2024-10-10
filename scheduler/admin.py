@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from .models import ReminderSchedule, ReminderContent
+from .models import ReminderContent, ReminderSchedule
 
 
 @admin.register(ReminderSchedule)

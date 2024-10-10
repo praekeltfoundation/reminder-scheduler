@@ -1,14 +1,15 @@
 import json
-import responses
 from datetime import datetime
+from unittest.mock import patch
+
+import responses
 from django.contrib.auth.models import User
 from django.test import override_settings
 from django.urls import reverse
-from unittest.mock import patch
-from rest_framework import status
-from rest_framework.test import APITestCase
 from requests.exceptions import HTTPError
 from responses.matchers import json_params_matcher
+from rest_framework import status
+from rest_framework.test import APITestCase
 
 
 class GetMsisdnTimezoneTurnTest(APITestCase):

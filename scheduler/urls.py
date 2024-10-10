@@ -1,11 +1,11 @@
 from django.urls import re_path
-from .views import (
-    ReminderCreate,
-    GetMsisdnTimezoneTurn,
-    GetMsisdnTimezones,
-    MaintenanceErrorResponse,
-)
 
+from .views import (
+    GetMsisdnTimezones,
+    GetMsisdnTimezoneTurn,
+    MaintenanceErrorResponse,
+    ReminderCreate,
+)
 
 urlpatterns = [
     re_path(

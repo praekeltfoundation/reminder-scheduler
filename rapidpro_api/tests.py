@@ -1,14 +1,14 @@
 import json
 
 import responses
-from responses.matchers import json_params_matcher
 from django.urls import reverse
+from responses.matchers import json_params_matcher
 from rest_framework import status
 from rest_framework.test import APITestCase
 
+from quickreplies.tests import generate_hmac_signature
 from rapidpro_api.models import TurnRapidproConnection
 from rapidpro_api.tasks import get_turn_field_value
-from quickreplies.tests import generate_hmac_signature
 
 
 class RapidproApiViewTests(APITestCase):

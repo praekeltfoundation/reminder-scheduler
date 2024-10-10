@@ -4,9 +4,9 @@ from rest_framework.response import Response
 from rest_framework.serializers import Serializer
 from rest_framework.viewsets import GenericViewSet
 
+from quickreplies.views import validate_hmac_signature
 from rapidpro_api.models import TurnRapidproConnection
 from rapidpro_api.tasks import sync_profile_fields
-from quickreplies.views import validate_hmac_signature
 
 
 class ProfileSyncViewSet(GenericViewSet):
