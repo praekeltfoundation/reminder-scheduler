@@ -53,7 +53,7 @@ def send_reminder(pk):
         s = requests.Session()
         s.headers.update(
             {
-                "Authorization": "Bearer %s" % settings.TURN_AUTH_TOKEN,
+                "Authorization": "Bearer {}".format(settings.TURN_AUTH_TOKEN),
             }
         )
         response = s.get(
@@ -92,7 +92,7 @@ def send_reminder(pk):
         headers = {
             "Content-Type": "application/json",
             "Accept": "application/json",
-            "Authorization": "Bearer %s" % settings.TURN_AUTH_TOKEN,
+            "Authorization": "Bearer {}".format(settings.TURN_AUTH_TOKEN),
         }
 
         response = s.post(

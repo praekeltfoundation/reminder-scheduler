@@ -78,7 +78,7 @@ class GetMsisdnTimezoneTurn(APIView):
             data=json.dumps({"timezone": timezone}),
             headers={
                 "Accept": "application/vnd.v1+json",
-                "Authorization": "Bearer %s" % settings.TURN_AUTH_TOKEN,
+                "Authorization": "Bearer {}".format(settings.TURN_AUTH_TOKEN),
                 "Content-Type": "application/json",
             },
         )
@@ -198,7 +198,7 @@ class MaintenanceErrorResponse(APIView):
         headers = {
             "Content-Type": "application/json",
             "Accept": "application/json",
-            "Authorization": "Bearer %s" % settings.TURN_AUTH_TOKEN,
+            "Authorization": "Bearer {}".format(settings.TURN_AUTH_TOKEN),
         }
 
         s = requests.Session()
