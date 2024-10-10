@@ -10,7 +10,7 @@ import requests
 from django.conf import settings
 from django.utils import timezone
 from phonenumbers import timezone as ph_timezone
-from rest_framework import authentication, permissions, status
+from rest_framework import authentication, permissions
 from rest_framework.exceptions import ValidationError
 from rest_framework.response import Response
 from rest_framework.views import APIView
