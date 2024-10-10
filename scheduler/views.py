@@ -84,14 +84,14 @@ class GetMsisdnTimezoneTurn(APIView):
     def post(self, request, *args, **kwargs):
         try:
             recipient_id = request.data["contacts"][0]["wa_id"]
-        except KeyError:
+        except KeyError as e:
             raise ValidationError(
                 {"contacts": [{"wa_id": ["This field is required."]}]}
-            )
+            ) from e
 
         try:
             msisdn = phonenumbers.parse(f"+{recipient_id}")
-        except phonenumbers.phonenumberutil.NumberParseException:
+        except phonenumbers.phonenumberutil.NumberParseException as e:
             raise ValidationError(
                 {
                     "contacts": [
@@ -102,7 +102,7 @@ class GetMsisdnTimezoneTurn(APIView):
                         }
                     ]
                 }
-            )
+            ) from e
 
         if not (
             phonenumbers.is_possible_number(msisdn)
@@ -139,17 +139,17 @@ class GetMsisdnTimezones(APIView):
     def post(self, request, *args, **kwargs):
         try:
             msisdn = request.data["msisdn"]
-        except KeyError:
-            raise ValidationError({"msisdn": ["This field is required."]})
+        except KeyError as e:
+            raise ValidationError({"msisdn": ["This field is required."]}) from e
 
         msisdn = msisdn if msisdn.startswith("+") else "+" + msisdn
 
         try:
             msisdn = phonenumbers.parse(msisdn)
-        except phonenumbers.phonenumberutil.NumberParseException:
+        except phonenumbers.phonenumberutil.NumberParseException as e:
             raise ValidationError(
                 {"msisdn": ["This value must be a phone number with a region prefix."]}
-            )
+            ) from e
 
         if not (
             phonenumbers.is_possible_number(msisdn)

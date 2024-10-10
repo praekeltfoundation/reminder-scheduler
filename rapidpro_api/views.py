@@ -30,10 +30,10 @@ class ProfileSyncViewSet(GenericViewSet):
             raise ValidationError({"turn_field": "This query parameter is required."})
         try:
             msisdn = request.data["contacts"][0]["wa_id"]
-        except KeyError:
+        except KeyError as e:
             raise ValidationError(
                 {"contacts": [{"wa_id": ["This field is required."]}]}
-            )
+            ) from e
 
         sync_profile_fields.delay(connection.pk, rp_field, turn_field, msisdn)
 
