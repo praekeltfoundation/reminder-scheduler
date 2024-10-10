@@ -155,14 +155,15 @@ class GetMsisdnTimezoneTurnTest(APITestCase):
             match=[json_params_matcher({"timezone": "Australia/Adelaide"})],
         )
 
-        with self.assertRaises(HTTPError):
-            with patch("scheduler.views.datetime") as mock_datetime:
-                mock_datetime.utcnow.return_value = datetime(2022, 8, 8)
-                self.client.post(
-                    "/scheduler/timezone/turn?save=true",
-                    data=json.dumps({"contacts": [{"wa_id": "61498765432"}]}),
-                    content_type="application/json",
-                )
+        with self.assertRaises(HTTPError), patch(
+            "scheduler.views.datetime"
+        ) as mock_datetime:
+            mock_datetime.utcnow.return_value = datetime(2022, 8, 8)
+            self.client.post(
+                "/scheduler/timezone/turn?save=true",
+                data=json.dumps({"contacts": [{"wa_id": "61498765432"}]}),
+                content_type="application/json",
+            )
 
         self.assertEqual(
             responses.calls[0].request.headers["Authorization"],

@@ -78,8 +78,7 @@ ignore = [
     "F841", # TODO: Local variable is assigned to but never used
     "F401", # TODO: module imported but unused
     "I001", # TODO: Import block is un-sorted or un-formatted
-    "SIM117", # TODO: Use a single `with` statement with multiple contexts instead of nested `with` statements
-   
+
 ]
 
 [tool.ruff.lint.per-file-ignores]
