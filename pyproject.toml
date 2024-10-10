@@ -74,7 +74,6 @@ ignore = [
     "PTH120", # TODO: `os.path.dirname()` should be replaced by `Path.parent` maybe use pathlib?
     "W291", # TODO: Use format specifiers instead of percent format
     "B904", # TODO: Within an `except` clause, raise exceptions with `raise ... from err` or `raise ... from None`
-    "UP032", # TODO: Use f-string instead of `format` call
 
 ]
 

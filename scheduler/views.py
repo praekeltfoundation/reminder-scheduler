@@ -30,9 +30,7 @@ def get_middle_tz(zones):
 
     approx_tz = ordered_tzs[floor(len(ordered_tzs) / 2)]["name"]
 
-    LOGGER.info(
-        "Available timezones: {}. Returned timezone: {}".format(ordered_tzs, approx_tz)
-    )
+    LOGGER.info(f"Available timezones: {ordered_tzs}. Returned timezone: {approx_tz}")
     return approx_tz
 
 
@@ -77,7 +75,7 @@ class GetMsisdnTimezoneTurn(APIView):
             data=json.dumps({"timezone": timezone}),
             headers={
                 "Accept": "application/vnd.v1+json",
-                "Authorization": "Bearer {}".format(settings.TURN_AUTH_TOKEN),
+                "Authorization": f"Bearer {settings.TURN_AUTH_TOKEN}",
                 "Content-Type": "application/json",
             },
         )
@@ -92,7 +90,7 @@ class GetMsisdnTimezoneTurn(APIView):
             )
 
         try:
-            msisdn = phonenumbers.parse("+{}".format(recipient_id))
+            msisdn = phonenumbers.parse(f"+{recipient_id}")
         except phonenumbers.phonenumberutil.NumberParseException:
             raise ValidationError(
                 {
@@ -197,7 +195,7 @@ class MaintenanceErrorResponse(APIView):
         headers = {
             "Content-Type": "application/json",
             "Accept": "application/json",
-            "Authorization": "Bearer {}".format(settings.TURN_AUTH_TOKEN),
+            "Authorization": f"Bearer {settings.TURN_AUTH_TOKEN}",
         }
 
         s = requests.Session()

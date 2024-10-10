@@ -12,7 +12,7 @@ def get_turn_field_value(connection, turn_field, msisdn):
     turn_url = urljoin(connection.turn_url, f"/v1/contacts/{msisdn}/profile")
     turn_headers = {
         "Accept": "application/vnd.v1+json",
-        "Authorization": "Bearer {}".format(connection.turn_api_token),
+        "Authorization": f"Bearer {connection.turn_api_token}",
     }
     turn_response = requests.request(method="GET", url=turn_url, headers=turn_headers)
     turn_response.raise_for_status()
@@ -38,7 +38,7 @@ def sync_profile_fields(connection_pk, rp_field, turn_field, msisdn):
     rp_url = urljoin(
         connection.rp_url, f"/api/v2/contacts.json?urn=whatsapp%3A{msisdn}"
     )
-    rp_headers = {"Authorization": "Token {}".format(connection.rp_api_token)}
+    rp_headers = {"Authorization": f"Token {connection.rp_api_token}"}
     if rp_field == "language":
         body = {rp_field: turn_value.lower()}
     else:
