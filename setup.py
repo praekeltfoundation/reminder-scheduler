@@ -21,7 +21,7 @@ setup(
         "redis==4.4.4",
         "requests>=2.24.0",
         "phonenumbers",
-        "pytz"
+        "pytz",
     ],
     classifiers=[
         "Development Status :: 4 - Beta",

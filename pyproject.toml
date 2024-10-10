@@ -1,22 +1,101 @@
-# Example configuration for Black.
 
-# see https://raw.githubusercontent.com/ambv/black/master/pyproject.toml
 
-[tool.black]
-line-length = 88
-include = '\.pyi?$'
-exclude = '''
-/(
-    \.git
-  | \.hg
-  | \.mypy_cache
-  | \.tox
-  | \.venv
-  | \.ve
-  | _build
-  | buck-out
-  | build
-  | dist
-  | migrations
-)/
-'''
+
+[tool.poetry]
+name = "reminder-scheduler"
+version = "1.1.0"
+description = ""
+authors = ["Fritz Brand <fritz@reachdigitalhealth.org>"]
+repository = "https://github.com/praekeltfoundation/reminder-scheduler"
+license = "BSD"
+readme = "README.rst"
+
+packages = [
+  { include = "config" },
+  { include = "quickreplies" },
+  { include = "rapidpro_api" },
+  { include = "scheduler" },
+]
+
+[tool.poetry.dependencies]
+python = "^3.9"
+celery = "5.2.7"
+django = "^3.1.0"
+django-celery-beat = "2.5.0"
+django-environ = "^0.4.5"
+djangorestframework = "*"
+dj-database-url = "*"
+psycopg2-binary = "*"
+sentry-sdk = "1.14.0"
+redis = "4.4.4"
+requests = "^2.24.0"
+phonenumbers = "*"
+pytz = "*"
+
+
+[tool.poetry.group.dev.dependencies]
+ruff = "^0.6.9"
+pytest-django = "^4.9.0"
+pytest-cov = "^2.9.0"
+responses = "^0.25.3"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.ruff]
+extend-exclude = [
+    "*/migrations/*.py",
+    "docs/conf.py",
+
+]
+
+[tool.ruff.lint]
+select = [
+    "E", "F", "W", # pycodestyle + pyflakes == flake8 - mccabe
+    "I",           # isort
+    "UP",          # pyupgrade
+    "S",           # flake8-bandit
+    "B",           # flake8-bugbear
+    "C4",          # flake8-comprehensions
+    # "DJ",          # flake8-django
+    "PIE",         # flake8-pie
+    # "PT",          # flake8-pytest-style
+    "SIM",         # flake8-simplify
+    "PTH",         # flake8-use-pathlib
+    # "RUF",         # ruff-specific rules
+]
+
+ignore = [
+    "E501",  # TODO: Something about these long lines.
+    "S113",  # TODO: Add request timeouts.
+    "PTH118", # TODO: Switch to pathlib
+    "W291", # TODO: Use format specifiers instead of percent format
+    "B904", # TODO: Within an `except` clause, raise exceptions with `raise ... from err` or `raise ... from None`
+    "UP032", # TODO: Use f-string instead of `format` call
+    "F841", # TODO: Local variable is assigned to but never used
+    "F401", # TODO: module imported but unused
+    "I001", # TODO: Import block is un-sorted or un-formatted
+    "SIM117", # TODO: Use a single `with` statement with multiple contexts instead of nested `with` statements
+    "S106", # TODO: Possible hardcoded password assigned to argument: "TURN_AUTH_TOKEN"
+    "UP031", # TODO: Use format specifiers instead of percent format
+    "PTH100", # TODO: `os.path.abspath()` should be replaced by `Path.resolve()`
+    "PTH120", # TODO: `os.path.dirname()` should be replaced by `Path.parent`
+    "UP010", # TODO: Unnecessary `__future__` import `absolute_import` for target Python version
+]
+
+[tool.ruff.lint.per-file-ignores]
+"**/tests/**" = [
+    "S101",  # It's okay to use `assert` in tests.
+]
+
+# TODO: Move this somewhere sensible?
+"**/tests.py" = [
+    "S101",  # It's okay to use `assert` in tests.
+]
+
+"**/config/settings/{test,dev}.py" = [
+    "S104",  # It's okay to bind to all interfaces in tests
+    "F405", # Its okay to import * in settings
+    "S105", # Its okay to have hardcoded secrets in test config
+]

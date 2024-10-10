@@ -1,7 +1,9 @@
 from django.urls import re_path
 from .views import (
-    ReminderCreate, GetMsisdnTimezoneTurn, GetMsisdnTimezones,
-    MaintenanceErrorResponse
+    ReminderCreate,
+    GetMsisdnTimezoneTurn,
+    GetMsisdnTimezones,
+    MaintenanceErrorResponse,
 )
 
 
