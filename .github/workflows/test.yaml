@@ -22,12 +22,10 @@ jobs:
       DATABASE_URL: postgres://postgres:postgres@localhost/reminder_scheduler
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5.0.0
+      - uses: actions/setup-python@v5
         with:
           python-version: '3.9'
-      - uses: abatilo/actions-poetry@v2.0.0
-        with:
-          poetry-version: "1.8.3"    
+      - uses: abatilo/actions-poetry@v3
       - name: Install dependencies
         id: install-deps
         run: |
