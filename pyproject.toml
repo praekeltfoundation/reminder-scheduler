@@ -1,6 +1,3 @@
-
-
-
 [tool.poetry]
 name = "reminder-scheduler"
 version = "1.1.0"
@@ -18,7 +15,7 @@ packages = [
 ]
 
 [tool.poetry.dependencies]
-python = "^3.9"
+python = "^3.10"
 celery = "5.2.7"
 django = "^3.1.0"
 django-celery-beat = "2.5.0"
@@ -44,6 +41,7 @@ requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
 
 [tool.ruff]
+target-version = "py310"
 extend-exclude = [
     "*/migrations/*.py",
     "docs/conf.py",
@@ -63,7 +61,7 @@ select = [
     # "PT",          # flake8-pytest-style
     "SIM",         # flake8-simplify
     "PTH",         # flake8-use-pathlib
-    # "RUF",         # ruff-specific rules
+    "RUF",         # ruff-specific rules
 ]
 
 ignore = [
@@ -72,6 +70,7 @@ ignore = [
     "PTH118", # TODO: Switch to pathlib
     "PTH100", # TODO: `os.path.abspath()` should be replaced by `Path.resolve()` maybe use pathlib?
     "PTH120", # TODO: `os.path.dirname()` should be replaced by `Path.parent` maybe use pathlib?
+    "RUF012", # We usually want immutable instance attributes
 
 ]
 

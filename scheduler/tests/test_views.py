@@ -156,9 +156,10 @@ class GetMsisdnTimezoneTurnTest(APITestCase):
             match=[json_params_matcher({"timezone": "Australia/Adelaide"})],
         )
 
-        with self.assertRaises(HTTPError), patch(
-            "scheduler.views.datetime"
-        ) as mock_datetime:
+        with (
+            self.assertRaises(HTTPError),
+            patch("scheduler.views.datetime") as mock_datetime,
+        ):
             mock_datetime.utcnow.return_value = datetime(2022, 8, 8)
             self.client.post(
                 "/scheduler/timezone/turn?save=true",

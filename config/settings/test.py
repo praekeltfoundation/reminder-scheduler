@@ -9,5 +9,5 @@ DEBUG = True
 TEMPLATE_DEBUG = True
 
 ENV_HOSTS = [host for host in env.str("ALLOWED_HOSTS", "").split(",") if host]
-ALLOWED_HOSTS = ENV_HOSTS + ["localhost", ".localhost", "127.0.0.1", "0.0.0.0"]
+ALLOWED_HOSTS = [*ENV_HOSTS, "localhost", ".localhost", "127.0.0.1", "0.0.0.0"]
 CELERY_ALWAYS_EAGER = True
