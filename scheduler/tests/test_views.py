@@ -113,7 +113,7 @@ class GetMsisdnTimezoneTurnTest(APITestCase):
 
     @responses.activate
     @override_settings(TURN_URL="https://fake_turn.url")
-    @override_settings(TURN_AUTH_TOKEN="fake-turn-token")
+    @override_settings(TURN_AUTH_TOKEN="fake-turn-token")  # noqa: S106 - Fake password/token for test purposes
     def test_save_param_true_updates_turn_profile(self):
         self.client.force_authenticate(user=self.admin_user)
 
@@ -145,7 +145,7 @@ class GetMsisdnTimezoneTurnTest(APITestCase):
 
     @responses.activate
     @override_settings(TURN_URL="https://fake_turn.url")
-    @override_settings(TURN_AUTH_TOKEN="fake-turn-token")
+    @override_settings(TURN_AUTH_TOKEN="fake-turn-token")  # noqa: S106 - Fake password/token for test purposes
     def test_save_param_true_raises_error_if_patch_fails(self):
         self.client.force_authenticate(user=self.admin_user)
 

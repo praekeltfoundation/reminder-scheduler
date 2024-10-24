@@ -1,7 +1,7 @@
 from .base import *  # noqa
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = "TESTSEKRET"
+SECRET_KEY = "TESTSEKRET"  # noqa: S105 - Fake password/token for test purposes
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True

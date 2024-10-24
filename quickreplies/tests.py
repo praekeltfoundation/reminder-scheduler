@@ -23,7 +23,7 @@ class QuickReplyViewTests(APITestCase):
         If the HMAC secret is configured, and there's no HMAC header, or it's invalid,
         then we should return a 401
         """
-        quickreply = QuickReplyDestination.objects.create(hmac_secret="test-secret")
+        quickreply = QuickReplyDestination.objects.create(hmac_secret="test-secret")  # noqa: S106 - Fake password/token for test purposes
         url = reverse("quickreply-message", args=[quickreply.pk])
         data = {"test": "body"}
 
@@ -42,7 +42,7 @@ class QuickReplyViewTests(APITestCase):
         to the configured URL
         """
         quickreply: QuickReplyDestination = QuickReplyDestination.objects.create(
-            url="https://example.org", hmac_secret="test-secret"
+            url="https://example.org", hmac_secret="test-secret"  # noqa: S106 - Fake password/token for test purposes
         )
         url: str = reverse("quickreply-message", args=[quickreply.pk])
         data = {
@@ -102,7 +102,7 @@ class QuickReplyViewTests(APITestCase):
         configured URL
         """
         quickreply: QuickReplyDestination = QuickReplyDestination.objects.create(
-            url="https://example.org", hmac_secret="test-secret"
+            url="https://example.org", hmac_secret="test-secret"  # noqa: S106 - Fake password/token for test purposes
         )
         url: str = reverse("quickreply-message", args=[quickreply.pk])
         data = {

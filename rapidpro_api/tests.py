@@ -19,9 +19,9 @@ class RapidproApiViewTests(APITestCase):
         """
         connection = TurnRapidproConnection.objects.create(
             description="test connection",
-            hmac_secret="test-secret",
+            hmac_secret="test-secret",  # noqa: S106 - Fake password/token for test purposes
             rp_url="https://example.org",
-            rp_api_token="some-token",
+            rp_api_token="some-token",  # noqa: S106 - Fake password/token for test purposes
         )
         url = reverse("profileSync-profileSync", args=[connection.pk])
         data = {"test": "body"}
@@ -43,10 +43,10 @@ class RapidproApiViewTests(APITestCase):
         connection = TurnRapidproConnection.objects.create(
             description="test connection",
             turn_url="https://turn_example.org",
-            turn_api_token="test-token",
-            rp_api_token="some-token",
+            turn_api_token="test-token",  # noqa: S106 - Fake password/token for test purposes
+            rp_api_token="some-token",  # noqa: S106 - Fake password/token for test purposes
             rp_url="https://rp_example.org",
-            hmac_secret="test-secret",
+            hmac_secret="test-secret",  # noqa: S106 - Fake password/token for test purposes
         )
 
         responses.add(
@@ -84,10 +84,10 @@ class RapidproApiViewTests(APITestCase):
         connection = TurnRapidproConnection.objects.create(
             description="test connection",
             turn_url="https://turn_example.org",
-            turn_api_token="test-token",
-            rp_api_token="some-token",
+            turn_api_token="test-token",  # noqa: S106 - Fake password/token for test purposes
+            rp_api_token="some-token",  # noqa: S106 - Fake password/token for test purposes
             rp_url="https://rp_example.org",
-            hmac_secret="test-secret",
+            hmac_secret="test-secret",  # noqa: S106 - Fake password/token for test purposes
         )
         turn_field = "test_turn_field"
         rp_field = "test_rp_field"
@@ -128,8 +128,8 @@ class RapidproApiViewTests(APITestCase):
         connection = TurnRapidproConnection.objects.create(
             description="test connection",
             turn_url="https://turn_example.org",
-            turn_api_token="test-token",
-            rp_api_token="some-token",
+            turn_api_token="test-token",  # noqa: S106 - Fake password/token for test purposes
+            rp_api_token="some-token",  # noqa: S106 - Fake password/token for test purposes
             rp_url="https://rp_example.org",
         )
 
@@ -148,7 +148,7 @@ class RapidproApiViewTests(APITestCase):
         """
         connection = TurnRapidproConnection.objects.create(
             description="test connection",
-            rp_api_token="some-token",
+            rp_api_token="some-token",  # noqa: S106 - Fake password/token for test purposes
             rp_url="https://rp_example.org",
         )
 
