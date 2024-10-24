@@ -42,7 +42,8 @@ class QuickReplyViewTests(APITestCase):
         to the configured URL
         """
         quickreply: QuickReplyDestination = QuickReplyDestination.objects.create(
-            url="https://example.org", hmac_secret="test-secret"  # noqa: S106 - Fake password/token for test purposes
+            url="https://example.org",
+            hmac_secret="test-secret",  # noqa: S106 - Fake password/token for test purposes
         )
         url: str = reverse("quickreply-message", args=[quickreply.pk])
         data = {
@@ -102,7 +103,8 @@ class QuickReplyViewTests(APITestCase):
         configured URL
         """
         quickreply: QuickReplyDestination = QuickReplyDestination.objects.create(
-            url="https://example.org", hmac_secret="test-secret"  # noqa: S106 - Fake password/token for test purposes
+            url="https://example.org",
+            hmac_secret="test-secret",  # noqa: S106 - Fake password/token for test purposes
         )
         url: str = reverse("quickreply-message", args=[quickreply.pk])
         data = {
