@@ -50,6 +50,8 @@ dev = [
 
 [tool.pytest.ini_options]
 filterwarnings = ['ignore::DeprecationWarning',]
+python_files = "test*.py"
+addopts = "--verbose --ds=config.settings.test"
 
 [tool.ruff]
 extend-exclude = [
