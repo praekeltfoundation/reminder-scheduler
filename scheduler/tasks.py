@@ -39,14 +39,14 @@ def check_for_scheduled_reminders():
 
 @app.task(ignore_result=True, soft_time_limit=10, time_limit=15)
 def send_reminder(pk):
-    with r.lock("reminder_%d" % pk, timeout=10):
+    with r.lock("reminder_{}".format("%d") % pk, timeout=10):
         # Return early if the reminder has already been sent
         try:
             reminder = ReminderSchedule.objects.get(
                 pk=pk, sent_time__isnull=True, cancelled=False
             )
         except ReminderSchedule.DoesNotExist:
-            logger.info("No unsent reminder with pk %d" % pk)
+            logger.info("No unsent reminder with pk {}".format("%d") % pk)
             return
 
         logger.info("Retrieving contact info")
@@ -78,10 +78,10 @@ def send_reminder(pk):
         if day5_complete.lower() == "next" or "yes" not in opted_in.lower():
             reminder.cancelled = True
             reminder.save()
-            logger.info("Cancelled reminder %d" % pk)
+            logger.info("Cancelled reminder {}".format("%d") % pk)
             return
 
-        logger.info("Sending reminder %d" % pk)
+        logger.info("Sending reminder {}".format("%d") % pk)
         data = {
             "preview_url": False,
             "recipient_type": "individual",

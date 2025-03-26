@@ -78,6 +78,8 @@ ignore = [
     "E501",  # TODO: Something about these long lines.
     "S113",  # TODO: Add request timeouts.
     "PTH118", # TODO: Switch to pathlib
+    "PTH100", # TODO: Switch to pathlib
+    "PTH120", # TODO: Switch to pathlib
     "RUF012", # We usually want immutable instance attributes
 ]
 
