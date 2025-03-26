@@ -7,6 +7,7 @@ class ReminderContent(models.Model):
     def __str__(self):
         return self.text
 
+
 class ReminderSchedule(models.Model):
     schedule_time = models.DateTimeField(null=False, blank=False)
     created_at = models.DateTimeField(auto_now_add=True)
@@ -18,7 +19,8 @@ class ReminderSchedule(models.Model):
     class Meta:
         indexes = [
             models.Index(
-                name='schedule_time_partial',
-                fields=['schedule_time'],
-                condition=models.Q(sent_time__isnull=True, cancelled=False)),
+                name="schedule_time_partial",
+                fields=["schedule_time"],
+                condition=models.Q(sent_time__isnull=True, cancelled=False),
+            ),
         ]

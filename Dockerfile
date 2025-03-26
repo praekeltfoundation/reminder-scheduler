@@ -1,11 +1,8 @@
-FROM ghcr.io/praekeltfoundation/docker-django-bootstrap-nw:py3.9
-
-COPY ./requirements.txt /app/
-COPY ./setup.py /app/
-
-RUN pip install -r /app/requirements.txt
+FROM ghcr.io/praekeltfoundation/docker-django-bootstrap-nw:py3.10-bullseye
 
 COPY . /app
+
+RUN pip install -e .
 
 # temporary untill there is a new PyCap Release
 ENV DJANGO_SETTINGS_MODULE "config.settings.production"

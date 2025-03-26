@@ -21,14 +21,29 @@ jobs:
     env:
       DATABASE_URL: postgres://postgres:postgres@localhost/reminder_scheduler
     steps:
-      - uses: actions/checkout@v3
-      - uses: actions/setup-python@v5.0.0
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
         with:
-          python-version: '3.9'
-          cache: 'pip'
-      - name: Install dependancies
-        run: pip install -r requirements.txt -r requirements-dev.txt
-      - name: Run tests
+          python-version: '3.10'
+      - uses: astral-sh/setup-uv@v3
+      - name: Install dependencies
+        id: install-deps
         run: |
-          python manage.py makemigrations --check
-          pytest
+          uv sync --dev
+      - name: Check formatting
+        # Lints/tests should always run, even if other lints/tests have failed.
+        if: success() || failure() && steps.install-deps.outcome == 'success'
+        run: |
+          uv run ruff format --check
+      - name: Lint
+        if: success() || failure() && steps.install-deps.outcome == 'success'
+        run: |
+          uv run ruff check
+      - name: Run migrations
+        if: success() || failure() && steps.install-deps.outcome == 'success'
+        run: |
+          uv run ./manage.py makemigrations --dry-run | grep 'No changes detected' || (echo 'There are changes which require migrations.' && exit 1)
+      - name: Run tests
+        if: success() || failure() && steps.install-deps.outcome == 'success'
+        run: |
+          uv run pytest -vv
